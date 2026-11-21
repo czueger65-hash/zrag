@@ -15,8 +15,8 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 ## Spiellogik
 
-- Bei jedem Spielstart werden 6 Themen aus einem Pool von 17 Themen ausgelost und aus jedem Thema 10 Wörter (60 Begriffe pro Spiel).
-- Pool-Themen: Tiere, Berufe, Sport, Essen & Trinken, Verkehrsmittel, Haushalt, Natur & Wetter, Musikinstrumente, Kleidung, Märchen & Fantasie, Schule & Büro, Am Strand, Werkzeuge, Körper, Freizeit & Spiele, Gebäude, Feste & Feiertage.
+- Bei jedem Spielstart werden 6 Themen aus einem Pool von 30 Themen mit je 30 Wörtern (900 Begriffe) ausgelost und aus jedem Thema 10 Wörter (60 Begriffe pro Spiel).
+- Pool-Themen: Haustiere & Bauernhof, Wildtiere, Meerestiere, Vögel & Insekten, Berufe, Sport, Obst & Gemüse, Essen & Trinken, Verkehrsmittel, Küche, Wohnen & Haushalt, Natur & Wetter, Musik, Kleidung & Accessoires, Märchen & Fantasie, Schule & Büro, Strand & Ferien, Werkzeuge & Garten, Körper & Gesundheit, Spielzeug & Spielplatz, Gebäude & Bauwerke, Feste & Feiertage, Technik & Elektronik, Weltraum & Wissenschaft, Winter & Berge, Stadt & Strasse, Zirkus & Jahrmarkt, Tätigkeiten, Geschichte & Abenteuer, Hobbys & Freizeit.
 - Aufnahmekriterium für Wörter: konkret und in unter einer Minute erkennbar zeichenbar. Jedes Wort kommt im Pool nur einmal vor.
 - Jeder Vorschlag zieht ein zufälliges offenes Thema und daraus ein noch nicht gezeigtes Wort. Kein Begriff kommt doppelt.
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
