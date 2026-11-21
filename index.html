@@ -182,36 +182,43 @@
     .brand { font-size: 1.6rem; }
   }
   @media (prefers-reduced-motion: reduce) { .word { transition: none; } }
+  .top-right { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--board); }
+  .lang button { border: 0; border-radius: 0; padding: 7px 14px; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; }
+  .lang button + button { border-left: 1px solid var(--line); }
+  .lang button[aria-pressed="true"] { background: var(--marker); color: var(--marker-ink); }
 </style>
 </head>
 <body>
 <div class="shell">
   <header class="top">
     <h1 class="brand">zrag<span>.</span></h1>
-    <div class="meta" id="meta"></div>
+    <div class="top-right">
+      <div class="meta" id="meta"></div>
+      <div class="lang" id="langSwitch" role="group">
+        <button type="button" data-lang="de" lang="de">DE</button>
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="es" lang="es">ES</button>
+      </div>
+    </div>
   </header>
 
   <!-- Einrichtung -->
   <section id="setup" class="panel setup">
     <div>
-      <div class="eyebrow">Zeichnen &amp; Raten</div>
-      <h2>Neues Spiel</h2>
+      <div class="eyebrow" data-i18n="tagline"></div>
+      <h2 data-i18n="newGame"></h2>
     </div>
-    <p class="rules">
-      Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten.
-      Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer.
-      Wer zuerst richtig rät, bekommt einen Punkt. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat.
-      Bei jedem Spielstart werden 6 von <span id="poolCount">30</span> Themen mit je 10 Wörtern ausgelost.
-    </p>
+    <p class="rules" id="rules"></p>
     <fieldset class="field">
-      <legend>Spieler (2 bis 9)</legend>
+      <legend data-i18n="playersLegend"></legend>
       <ol class="players" id="playerList"></ol>
       <div class="row">
-        <button type="button" id="btnAddPlayer">Spieler hinzufügen</button>
+        <button type="button" id="btnAddPlayer" data-i18n="addPlayer"></button>
       </div>
     </fieldset>
     <fieldset class="field">
-      <legend>Zeit pro Runde</legend>
+      <legend data-i18n="timeLegend"></legend>
       <div class="seg" id="durationSeg">
         <label><input type="radio" name="duration" id="dur30" value="30"><span>30 s</span></label>
         <label><input type="radio" name="duration" id="dur60" value="60" checked><span>60 s</span></label>
@@ -219,24 +226,24 @@
         <label><input type="radio" name="duration" id="dur120" value="120"><span>120 s</span></label>
       </div>
     </fieldset>
-    <label class="check"><input type="checkbox" id="drawerPoint"> Zeichner erhält ebenfalls 1 Punkt, wenn sein Begriff erraten wird</label>
+    <label class="check"><input type="checkbox" id="drawerPoint"> <span data-i18n="drawerPoint"></span></label>
     <p class="error" id="setupError" hidden></p>
     <div class="row">
-      <button type="button" class="primary" id="btnStart">Spiel starten</button>
-      <button type="button" id="btnResume" hidden>Gespeichertes Spiel fortsetzen</button>
+      <button type="button" class="primary" id="btnStart" data-i18n="start"></button>
+      <button type="button" id="btnResume" data-i18n="resume" hidden></button>
     </div>
   </section>
 
   <!-- Spiel -->
   <section id="game" class="game" hidden>
     <div class="panel stage">
-      <div class="drawer">Es zeichnet: <strong id="drawerName">–</strong></div>
+      <div class="drawer"><span data-i18n="drawing"></span> <strong id="drawerName">–</strong></div>
       <div>
-        <div class="eyebrow">Thema</div>
+        <div class="eyebrow" data-i18n="topic"></div>
         <div class="topic" id="topic">–</div>
       </div>
       <div>
-        <div class="eyebrow">Wort</div>
+        <div class="eyebrow" data-i18n="word"></div>
         <div class="word" id="word">–</div>
       </div>
       <div class="timer" id="timer">
@@ -245,31 +252,29 @@
         <div class="status" id="status"></div>
       </div>
       <div class="actions">
-        <button type="button" class="primary" id="btnNext">Nächste Runde</button>
-        <button type="button" id="btnPause">Pause</button>
-        <button type="button" id="btnVeil">Verdecken</button>
-        <button type="button" id="btnReset">Neu starten</button>
+        <button type="button" class="primary" id="btnNext" data-i18n="next"></button>
+        <button type="button" id="btnPause"></button>
+        <button type="button" id="btnVeil"></button>
+        <button type="button" id="btnReset"></button>
       </div>
-      <p class="keys">
-        <kbd>Enter</kbd> nächste Runde · <kbd>Leertaste</kbd> Pause · <kbd>V</kbd> aufdecken/verdecken · <kbd>1</kbd>–<kbd>9</kbd> Punkt vergeben
-      </p>
+      <p class="keys" id="keysHint"></p>
     </div>
     <aside class="panel scores">
-      <h3>Punktestand</h3>
+      <h3 data-i18n="scores"></h3>
       <ol class="scorelist" id="scoreList"></ol>
-      <p class="keys">„Erraten“ beendet die Runde und vergibt den Punkt. Mit „−“ lassen sich Fehler korrigieren.</p>
+      <p class="keys" data-i18n="scoresHint"></p>
     </aside>
   </section>
 
   <!-- Ende -->
   <section id="end" class="panel end" hidden>
     <div>
-      <div class="eyebrow">Alle 60 Begriffe gezeichnet</div>
-      <h2 id="endTitle">Spielende</h2>
+      <div class="eyebrow" id="endEyebrow"></div>
+      <h2 id="endTitle"></h2>
     </div>
     <ol class="ranking" id="ranking"></ol>
     <div class="row">
-      <button type="button" class="primary" id="btnAgain">Neues Spiel</button>
+      <button type="button" class="primary" id="btnAgain" data-i18n="newGame"></button>
     </div>
   </section>
 
@@ -280,68 +285,155 @@
 (function () {
   "use strict";
 
-  // Themenpool: 30 Themen mit je 30 Wörtern. Bei jedem Spielstart werden 6 Themen und daraus je 10 Wörter ausgelost.
-  // Aufnahmekriterium: Der Begriff ist ein konkreter Gegenstand, ein Tier, eine Figur oder eine
-  // eindeutige Tätigkeit und lässt sich in unter einer Minute erkennbar zeichnen.
-  // Jedes Wort kommt im ganzen Pool nur einmal vor.
-  var THEMEN_POOL = [
-    { name: "Haustiere & Bauernhof", woerter: ["Hund", "Katze", "Kuh", "Schwein", "Pferd", "Schaf", "Ziege", "Huhn", "Hahn", "Ente", "Gans", "Esel", "Hase", "Meerschweinchen", "Hamster", "Goldfisch", "Wellensittich", "Truthahn", "Lama", "Maus", "Ratte", "Pony", "Küken", "Kalb", "Stier", "Schildkröte", "Futternapf", "Hundeleine", "Heuballen", "Vogelkäfig"] },
-    { name: "Wildtiere", woerter: ["Elefant", "Giraffe", "Löwe", "Tiger", "Zebra", "Nashorn", "Nilpferd", "Krokodil", "Affe", "Gorilla", "Känguru", "Koala", "Panda", "Eisbär", "Braunbär", "Wolf", "Fuchs", "Hirsch", "Reh", "Wildschwein", "Igel", "Eichhörnchen", "Kamel", "Schlange", "Leopard", "Faultier", "Stinktier", "Biber", "Elch", "Fledermaus"] },
-    { name: "Meerestiere", woerter: ["Hai", "Wal", "Delfin", "Krake", "Qualle", "Seestern", "Krebs", "Hummer", "Seepferdchen", "Robbe", "Walross", "Muschel", "Rochen", "Kugelfisch", "Clownfisch", "Schwertfisch", "Sägefisch", "Hammerhai", "Seeigel", "Koralle", "Garnele", "Meeresschildkröte", "Pinguin", "Narwal", "Seelöwe", "Aal", "Anglerfisch", "Schwertwal", "Thunfisch", "Fischschwarm"] },
-    { name: "Vögel & Insekten", woerter: ["Eule", "Adler", "Papagei", "Flamingo", "Storch", "Schwan", "Pfau", "Specht", "Tukan", "Strauss", "Kolibri", "Möwe", "Rabe", "Taube", "Vogelnest", "Biene", "Ameise", "Marienkäfer", "Schmetterling", "Raupe", "Spinne", "Libelle", "Heuschrecke", "Mücke", "Fliege", "Schnecke", "Regenwurm", "Glühwürmchen", "Skorpion", "Bienenstock"] },
-    { name: "Berufe", woerter: ["Feuerwehrmann", "Koch", "Arzt", "Pilot", "Maler", "Polizist", "Zahnarzt", "Gärtner", "Friseur", "Astronaut", "Bauarbeiter", "Taucher", "Briefträger", "Fischer", "Bäcker", "Metzger", "Kellner", "Lehrer", "Tierarzt", "Schreiner", "Kaminfeger", "Fotograf", "Richter", "Mechaniker", "Bauer", "Detektiv", "Lokführer", "Elektriker", "Schneider", "Imker"] },
-    { name: "Sport", woerter: ["Fussball", "Tennis", "Skifahren", "Schwimmen", "Boxen", "Golf", "Basketball", "Radfahren", "Bogenschiessen", "Surfen", "Eishockey", "Gewichtheben", "Tischtennis", "Reiten", "Bowling", "Volleyball", "Handball", "Badminton", "Rudern", "Hochsprung", "Stabhochsprung", "Karate", "Fechten", "Turmspringen", "Klettern", "Marathon", "Baseball", "Rugby", "Hürdenlauf", "Billard"] },
-    { name: "Obst & Gemüse", woerter: ["Apfel", "Banane", "Birne", "Kirsche", "Erdbeere", "Traube", "Ananas", "Wassermelone", "Zitrone", "Orange", "Kiwi", "Pfirsich", "Kokosnuss", "Himbeere", "Mango", "Avocado", "Karotte", "Tomate", "Gurke", "Kartoffel", "Zwiebel", "Knoblauch", "Brokkoli", "Maiskolben", "Peperoni", "Aubergine", "Kürbis", "Erbsenschote", "Pilz", "Radieschen"] },
-    { name: "Essen & Trinken", woerter: ["Pizza", "Spiegelei", "Hamburger", "Eiscreme", "Brezel", "Kaffee", "Spaghetti", "Geburtstagskuchen", "Hotdog", "Popcorn", "Käse", "Croissant", "Pommes frites", "Sandwich", "Sushi", "Donut", "Lutscher", "Schokolade", "Wurst", "Brot", "Suppe", "Pfannkuchen", "Muffin", "Milch", "Honig", "Taco", "Fondue", "Kebab", "Limonade", "Rösti"] },
-    { name: "Verkehrsmittel", woerter: ["Fahrrad", "Helikopter", "Segelboot", "Zug", "Rakete", "Traktor", "Heissluftballon", "U-Boot", "Motorrad", "Seilbahn", "Bus", "Flugzeug", "Kinderwagen", "Skateboard", "Feuerwehrauto", "Krankenwagen", "Polizeiauto", "Taxi", "Lastwagen", "Bagger", "Tram", "Kreuzfahrtschiff", "Ruderboot", "Trottinett", "Dampflok", "Rennwagen", "Wohnmobil", "Zeppelin", "Gleitschirm", "Einrad"] },
-    { name: "Küche", woerter: ["Toaster", "Teekanne", "Bratpfanne", "Kühlschrank", "Mikrowelle", "Kochtopf", "Schneebesen", "Nudelholz", "Messer", "Gabel", "Löffel", "Teller", "Tasse", "Weinglas", "Korkenzieher", "Mixer", "Kaffeemaschine", "Backofen", "Küchenwaage", "Reibe", "Suppenkelle", "Sieb", "Schürze", "Kochmütze", "Eierbecher", "Salzstreuer", "Wasserkocher", "Geschirrspüler", "Pfeffermühle", "Flaschenöffner"] },
-    { name: "Wohnen & Haushalt", woerter: ["Staubsauger", "Bügeleisen", "Wecker", "Regenschirm", "Glühbirne", "Waschmaschine", "Besen", "Bett", "Badewanne", "Sofa", "Stehlampe", "Spiegel", "Stuhl", "Tisch", "Kleiderschrank", "Kerze", "Teppich", "Vorhang", "Kamin", "Treppe", "Fenster", "Türklingel", "Schlüssel", "Bilderrahmen", "Kissen", "Dusche", "WC", "Wäscheleine", "Mülleimer", "Kleiderbügel"] },
-    { name: "Natur & Wetter", woerter: ["Regenbogen", "Blitz", "Vulkan", "Wolke", "Sonne", "Mond", "Baum", "Kaktus", "Berg", "Wasserfall", "Tornado", "Insel", "Blume", "Regen", "Fluss", "Höhle", "Wüste", "Palme", "Sonnenblume", "Rose", "Tulpe", "Kleeblatt", "Eichel", "Tannenzapfen", "Herbstblatt", "Pusteblume", "Seerose", "Sonnenuntergang", "Tannenbaum", "Bambus"] },
-    { name: "Musik", woerter: ["Gitarre", "Klavier", "Trommel", "Geige", "Trompete", "Harfe", "Blockflöte", "Saxofon", "Xylofon", "Alphorn", "Akkordeon", "Triangel", "Dudelsack", "Kontrabass", "Mundharmonika", "Mikrofon", "Notenschlüssel", "Musiknote", "Dirigent", "Schlagzeug", "Posaune", "Tuba", "Banjo", "Rassel", "Ukulele", "Plattenspieler", "Orgel", "Tamburin", "Metronom", "Panflöte"] },
-    { name: "Kleidung & Accessoires", woerter: ["Krawatte", "Socke", "Handschuh", "Stiefel", "Kleid", "Zylinder", "Brille", "Schal", "Mütze", "Gürtel", "Pullover", "Bikini", "Rucksack", "Hosenträger", "Turnschuh", "Hose", "T-Shirt", "Rock", "Hemd", "Pyjama", "Halskette", "Ohrring", "Armbanduhr", "Handtasche", "Regenmantel", "Sandale", "Stöckelschuh", "Unterhose", "Portemonnaie", "Reissverschluss"] },
-    { name: "Märchen & Fantasie", woerter: ["Drache", "Einhorn", "Hexe", "Ritter", "Prinzessin", "Schloss", "Zauberstab", "Meerjungfrau", "Riese", "Zwerg", "Gespenst", "Vampir", "Zauberer", "Fee", "Troll", "Krone", "Thron", "Kristallkugel", "Zaubertrank", "Fliegender Teppich", "Wunderlampe", "Hexenbesen", "Froschkönig", "Lebkuchenhaus", "Pegasus", "Zyklop", "Werwolf", "Kobold", "Zauberhut", "Bohnenranke"] },
-    { name: "Schule & Büro", woerter: ["Bleistift", "Lineal", "Globus", "Taschenrechner", "Büroklammer", "Wandtafel", "Schulthek", "Radiergummi", "Lupe", "Zirkel", "Briefumschlag", "Kalender", "Drucker", "Spitzer", "Schere", "Leimstift", "Füllfeder", "Buch", "Bostitch", "Kreide", "Pinnwand", "Stempel", "Etui", "Landkarte", "Bürostuhl", "Aktenkoffer", "Leuchtstift", "Ordner", "Klebeband", "Abakus"] },
-    { name: "Strand & Ferien", woerter: ["Sandburg", "Sonnenschirm", "Leuchtturm", "Liegestuhl", "Rettungsring", "Welle", "Sandeimer", "Schnorchel", "Badetuch", "Luftmatratze", "Sonnenbrille", "Sonnencreme", "Koffer", "Reisepass", "Postkarte", "Flipflops", "Badehose", "Hängematte", "Wasserball", "Taucherbrille", "Schwimmflügel", "Cocktail", "Strandkorb", "Fussspuren", "Rettungsschwimmer", "Flaschenpost", "Wasserski", "Bootssteg", "Wasserrutsche", "Sprungbrett"] },
-    { name: "Werkzeuge & Garten", woerter: ["Hammer", "Säge", "Schraubenzieher", "Zange", "Leiter", "Schubkarre", "Axt", "Bohrmaschine", "Schaufel", "Rechen", "Nagel", "Schraube", "Farbrolle", "Werkzeugkasten", "Giesskanne", "Rasenmäher", "Gartenschlauch", "Blumentopf", "Gartenzwerg", "Vogelscheuche", "Heckenschere", "Schraubenschlüssel", "Massband", "Wasserwaage", "Pinsel", "Kettensäge", "Taschenlampe", "Vorhängeschloss", "Gewächshaus", "Magnet"] },
-    { name: "Körper & Gesundheit", woerter: ["Auge", "Nase", "Ohr", "Hand", "Fuss", "Zahn", "Herz", "Skelett", "Gehirn", "Bart", "Zunge", "Muskel", "Fingerabdruck", "Lippen", "Zopf", "Zahnbürste", "Pflaster", "Spritze", "Fieberthermometer", "Rollstuhl", "Krücken", "Stethoskop", "Tablette", "Gipsbein", "Daumen", "Knochen", "Bauchnabel", "Augenbraue", "Zahnspange", "Seife"] },
-    { name: "Spielzeug & Spielplatz", woerter: ["Teddybär", "Puppe", "Kreisel", "Jo-Jo", "Würfel", "Schaukel", "Rutschbahn", "Wippe", "Sandkasten", "Trampolin", "Klettergerüst", "Seifenblase", "Luftballon", "Murmeln", "Bauklötze", "Schaukelpferd", "Puzzle", "Spielzeugeisenbahn", "Springseil", "Hula-Hoop-Reifen", "Wasserpistole", "Zauberwürfel", "Dominosteine", "Kasperlitheater", "Spielzeugauto", "Knete", "Kaleidoskop", "Papierflieger", "Murmelbahn", "Puppenhaus"] },
-    { name: "Gebäude & Bauwerke", woerter: ["Kirche", "Iglu", "Pyramide", "Wolkenkratzer", "Brücke", "Windmühle", "Bauernhof", "Tankstelle", "Eiffelturm", "Stadion", "Hundehütte", "Bahnhof", "Spital", "Baumhaus", "Gefängnis", "Moschee", "Staudamm", "Schiefer Turm von Pisa", "Freiheitsstatue", "Fabrik", "Schulhaus", "Kino", "Supermarkt", "Flughafen", "Hafen", "Blockhütte", "Tunnel", "Pfahlbau", "Wasserturm", "Big Ben"] },
-    { name: "Feste & Feiertage", woerter: ["Weihnachtsbaum", "Osterhase", "Kürbislaterne", "Geschenk", "Feuerwerk", "Samichlaus", "Adventskranz", "Partyhut", "Konfetti", "Fasnachtsmaske", "Ehering", "Zuckerstange", "Osterei", "Hochzeitstorte", "Brautkleid", "Christbaumkugel", "Engel", "Rentier", "Lampion", "Spinnennetz", "Liebesbrief", "Wunderkerze", "Girlande", "Krippe", "Osterkorb", "Grabstein", "Partytröte", "Lebkuchenmann", "Champagner", "Adventskalender"] },
-    { name: "Technik & Elektronik", woerter: ["Handy", "Laptop", "Fernseher", "Kopfhörer", "Lautsprecher", "Fotoapparat", "Roboter", "Drohne", "Fernbedienung", "Tastatur", "Computermaus", "Batterie", "Steckdose", "Joystick", "Tablet", "Satellitenschüssel", "Radio", "Wählscheibentelefon", "Ventilator", "USB-Stick", "Solarpanel", "Windrad", "Föhn", "Antenne", "Ladekabel", "Videokamera", "Walkie-Talkie", "Strichcode", "3D-Drucker", "Spielkonsole"] },
-    { name: "Weltraum & Wissenschaft", woerter: ["Planet", "Saturn", "Stern", "Sternschnuppe", "Komet", "Ufo", "Ausserirdischer", "Raumstation", "Satellit", "Teleskop", "Raumanzug", "Sonnenfinsternis", "Mikroskop", "Reagenzglas", "Atom", "DNA", "Kristall", "Marsrover", "Sternbild", "Laborkittel", "Fossil", "Zahnrad", "Prisma", "Sonnensystem", "Krater", "Schwarzes Loch", "Meteorit", "Pipette", "Zeitmaschine", "Petrischale"] },
-    { name: "Winter & Berge", woerter: ["Schneemann", "Snowboard", "Schlitten", "Skilift", "Schneeflocke", "Eiszapfen", "Schneeball", "Schlittschuh", "Matterhorn", "Murmeltier", "Steinbock", "Edelweiss", "Bernhardiner", "Kuhglocke", "Gipfelkreuz", "Lawine", "Berghütte", "Wanderschuh", "Skistöcke", "Schneepflug", "Heisse Schokolade", "Ohrenschützer", "Skispringen", "Langlauf", "Eisfischen", "Schneeschuh", "Gletscher", "Schneeengel", "Pistenfahrzeug", "Alpabzug"] },
-    { name: "Stadt & Strasse", woerter: ["Ampel", "Zebrastreifen", "Strassenlaterne", "Briefkasten", "Hydrant", "Parkuhr", "Bushaltestelle", "Stoppschild", "Kreisverkehr", "Baustelle", "Leitkegel", "Gullydeckel", "Parkbank", "Brunnen", "Kiosk", "Telefonkabine", "Rolltreppe", "Aufzug", "Einkaufswagen", "Graffiti", "Stau", "Denkmal", "Strassenmusiker", "Wegweiser", "Schaufenster", "Geldautomat", "Marktstand", "Strassenkehrer", "Veloständer", "Einbahnstrasse"] },
-    { name: "Zirkus & Jahrmarkt", woerter: ["Clown", "Jongleur", "Seiltänzer", "Zirkuszelt", "Dompteur", "Feuerspucker", "Trapez", "Akrobat", "Riesenrad", "Karussell", "Achterbahn", "Autoscooter", "Zuckerwatte", "Magenbrot", "Schiessbude", "Geisterbahn", "Zirkusdirektor", "Messerwerfer", "Feuerreif", "Stelzenläufer", "Hau den Lukas", "Entenangeln", "Bauchredner", "Wahrsagerin", "Glücksrad", "Spiegelkabinett", "Menschliche Kanonenkugel", "Gebrannte Mandeln", "Losbude", "Schwertschlucker"] },
-    { name: "Tätigkeiten", woerter: ["Schlafen", "Tanzen", "Lachen", "Weinen", "Niesen", "Gähnen", "Kochen", "Lesen", "Schreiben", "Singen", "Pfeifen", "Klatschen", "Winken", "Rennen", "Springen", "Tauchen", "Zähne putzen", "Telefonieren", "Malen", "Trinken", "Küssen", "Schnarchen", "Frieren", "Schwitzen", "Umarmen", "Stolpern", "Flüstern", "Kopfstand", "Liegestütze", "Seilziehen"] },
-    { name: "Geschichte & Abenteuer", woerter: ["Wikinger", "Pirat", "Schatzkiste", "Schatzkarte", "Mumie", "Dinosaurier", "Höhlenmensch", "Kolosseum", "Chinesische Mauer", "Gladiator", "Kanone", "Piratenschiff", "Kompass", "Cowboy", "Sheriffstern", "Lasso", "Planwagen", "Steckbrief", "Schwert", "Katapult", "Ritterhelm", "Musketier", "Samurai", "Mammut", "Säbelzahntiger", "Höhlenmalerei", "Pharao", "Sphinx", "Augenklappe", "Holzbein"] },
-    { name: "Hobbys & Freizeit", woerter: ["Schach", "Lagerfeuer", "Angel", "Zelt", "Spielkarten", "Wollknäuel", "Staffelei", "Picknickkorb", "Grill", "Modellflugzeug", "Aquarium", "Briefmarke", "Origami", "Kreuzworträtsel", "Töpferscheibe", "Nähmaschine", "Yoga", "3D-Brille", "Brettspiel", "Dartscheibe", "Minigolf", "Fotoalbum", "Fernglas", "Schlauchboot", "Sudoku", "Kanu", "Schlafsack", "Wanderkarte", "Tagebuch", "Fallschirmspringen"] }
+  // ---------- Texte der Oberfläche ----------
+  var LANGS = ["de", "en", "es"];
+  var I18N = {
+    de: {
+      tagline: "Zeichnen & Raten", newGame: "Neues Spiel",
+      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer. Wer zuerst richtig rät, bekommt einen Punkt. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart werden 6 von {pool} Themen mit je 10 Wörtern ausgelost.",
+      playersLegend: "Spieler (2 bis 9)", addPlayer: "Spieler hinzufügen", remove: "Entfernen",
+      playerDefault: "Spieler {n}", playerAria: "Name Spieler {n}", removeAria: "Spieler {n} entfernen",
+      timeLegend: "Zeit pro Runde", drawerPoint: "Zeichner erhält ebenfalls 1 Punkt, wenn sein Begriff erraten wird",
+      start: "Spiel starten", resume: "Gespeichertes Spiel fortsetzen",
+      drawing: "Es zeichnet:", topic: "Thema", word: "Wort",
+      next: "Nächste Runde", pause: "Pause", cont: "Weiter", reveal: "Aufdecken", hide: "Verdecken",
+      reset: "Neu starten", resetConfirm: "Wirklich abbrechen?",
+      keys: "<kbd>Enter</kbd> nächste Runde · <kbd>Leertaste</kbd> Pause · <kbd>V</kbd> aufdecken/verdecken · <kbd>1</kbd>–<kbd>9</kbd> Punkt vergeben",
+      scores: "Punktestand", scoresHint: "„Erraten“ beendet die Runde und vergibt den Punkt. Mit „−“ lassen sich Fehler korrigieren.",
+      guess: "Erraten", minusAria: "Einen Punkt abziehen", tagDrawing: "zeichnet", tagWinner: "hat erraten",
+      veiled: "Verdeckt – zum Aufdecken tippen",
+      stGuessed: "{name} hat nach {s} s erraten", stTimeout: "Zeit abgelaufen – kein Punkt",
+      stVeiled: "Begriff verdeckt. Aufdecken startet den Timer.", stPaused: "Pausiert",
+      endEyebrow: "Alle {n} Begriffe gezeichnet", tie: "Unentschieden: {names}", wins: "{name} gewinnt",
+      point: "Punkt", points: "Punkte",
+      metaSetup: "{n} Themen im Pool", metaGame: "Runde {r} · {d} / {t} Begriffe",
+      errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
+      errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
+      lang: "Sprache"
+    },
+    en: {
+      tagline: "Draw & Guess", newGame: "New game",
+      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer. Whoever guesses right first gets a point. The first drawer is picked at random; after that, whoever guessed the last word draws next. Each game draws 6 of {pool} topics with 10 words each.",
+      playersLegend: "Players (2 to 9)", addPlayer: "Add player", remove: "Remove",
+      playerDefault: "Player {n}", playerAria: "Name of player {n}", removeAria: "Remove player {n}",
+      timeLegend: "Time per round", drawerPoint: "The drawer also gets 1 point when their word is guessed",
+      start: "Start game", resume: "Resume saved game",
+      drawing: "Drawing:", topic: "Topic", word: "Word",
+      next: "Next round", pause: "Pause", cont: "Resume", reveal: "Reveal", hide: "Hide",
+      reset: "Restart", resetConfirm: "Really quit?",
+      keys: "<kbd>Enter</kbd> next round · <kbd>Space</kbd> pause · <kbd>V</kbd> reveal/hide · <kbd>1</kbd>–<kbd>9</kbd> award point",
+      scores: "Scores", scoresHint: "“Guessed” ends the round and awards the point. Use “−” to correct mistakes.",
+      guess: "Guessed", minusAria: "Remove one point", tagDrawing: "drawing", tagWinner: "guessed it",
+      veiled: "Hidden – tap to reveal",
+      stGuessed: "{name} guessed it in {s} s", stTimeout: "Time's up – no point",
+      stVeiled: "Word hidden. Revealing it starts the timer.", stPaused: "Paused",
+      endEyebrow: "All {n} words drawn", tie: "Tie: {names}", wins: "{name} wins",
+      point: "point", points: "points",
+      metaSetup: "{n} topics in the pool", metaGame: "Round {r} · {d} / {t} words",
+      errEmpty: "Give every player a name or remove empty rows.",
+      errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
+      lang: "Language"
+    },
+    es: {
+      tagline: "Dibuja y adivina", newGame: "Nueva partida",
+      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador. Quien acierta primero gana un punto. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida se sortean 6 de {pool} temas con 10 palabras cada uno.",
+      playersLegend: "Jugadores (de 2 a 9)", addPlayer: "Añadir jugador", remove: "Quitar",
+      playerDefault: "Jugador {n}", playerAria: "Nombre del jugador {n}", removeAria: "Quitar jugador {n}",
+      timeLegend: "Tiempo por ronda", drawerPoint: "Quien dibuja también gana 1 punto si aciertan su palabra",
+      start: "Empezar partida", resume: "Continuar partida guardada",
+      drawing: "Dibuja:", topic: "Tema", word: "Palabra",
+      next: "Siguiente ronda", pause: "Pausa", cont: "Seguir", reveal: "Mostrar", hide: "Ocultar",
+      reset: "Reiniciar", resetConfirm: "¿Seguro que quieres salir?",
+      keys: "<kbd>Enter</kbd> siguiente ronda · <kbd>Espacio</kbd> pausa · <kbd>V</kbd> mostrar/ocultar · <kbd>1</kbd>–<kbd>9</kbd> dar punto",
+      scores: "Puntuación", scoresHint: "«Acertó» termina la ronda y da el punto. Con «−» se corrigen errores.",
+      guess: "Acertó", minusAria: "Quitar un punto", tagDrawing: "dibuja", tagWinner: "acertó",
+      veiled: "Oculta – toca para mostrar",
+      stGuessed: "{name} acertó en {s} s", stTimeout: "Se acabó el tiempo: sin punto",
+      stVeiled: "Palabra oculta. Al mostrarla empieza el temporizador.", stPaused: "En pausa",
+      endEyebrow: "Las {n} palabras dibujadas", tie: "Empate: {names}", wins: "¡Gana {name}!",
+      point: "punto", points: "puntos",
+      metaSetup: "{n} temas disponibles", metaGame: "Ronda {r} · {d} / {t} palabras",
+      errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
+      errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
+      lang: "Idioma"
+    }
+  };
+
+  // ---------- Themenpool ----------
+  // 30 Themen mit je 30 Wörtern, jeweils [Deutsch, Englisch, Spanisch].
+  // Aufnahmekriterium: konkret, in unter einer Minute erkennbar zeichenbar, in allen drei Sprachen
+  // eindeutig übersetzbar. Jedes Wort kommt im Pool nur einmal vor.
+  var POOL = [
+    { name: ["Haustiere & Bauernhof", "Pets & Farm", "Mascotas y granja"], words: [["Hund","Dog","Perro"],["Katze","Cat","Gato"],["Kuh","Cow","Vaca"],["Schwein","Pig","Cerdo"],["Pferd","Horse","Caballo"],["Schaf","Sheep","Oveja"],["Ziege","Goat","Cabra"],["Huhn","Chicken","Gallina"],["Hahn","Rooster","Gallo"],["Ente","Duck","Pato"],["Gans","Goose","Ganso"],["Esel","Donkey","Burro"],["Hase","Rabbit","Conejo"],["Meerschweinchen","Guinea pig","Cobaya"],["Hamster","Hamster","Hámster"],["Goldfisch","Goldfish","Pez dorado"],["Wellensittich","Budgie","Periquito"],["Truthahn","Turkey","Pavo"],["Lama","Llama","Llama"],["Maus","Mouse","Ratón"],["Ratte","Rat","Rata"],["Pony","Pony","Poni"],["Küken","Chick","Pollito"],["Kalb","Calf","Ternero"],["Stier","Bull","Toro"],["Schildkröte","Turtle","Tortuga"],["Futternapf","Pet bowl","Comedero"],["Hundeleine","Dog leash","Correa de perro"],["Heuballen","Hay bale","Fardo de heno"],["Vogelkäfig","Birdcage","Jaula de pájaro"]] },
+    { name: ["Wildtiere", "Wild animals", "Animales salvajes"], words: [["Elefant","Elephant","Elefante"],["Giraffe","Giraffe","Jirafa"],["Löwe","Lion","León"],["Tiger","Tiger","Tigre"],["Zebra","Zebra","Cebra"],["Nashorn","Rhinoceros","Rinoceronte"],["Nilpferd","Hippopotamus","Hipopótamo"],["Krokodil","Crocodile","Cocodrilo"],["Affe","Monkey","Mono"],["Gorilla","Gorilla","Gorila"],["Känguru","Kangaroo","Canguro"],["Koala","Koala","Koala"],["Panda","Panda","Panda"],["Eisbär","Polar bear","Oso polar"],["Braunbär","Brown bear","Oso pardo"],["Wolf","Wolf","Lobo"],["Fuchs","Fox","Zorro"],["Hirsch","Deer","Ciervo"],["Igel","Hedgehog","Erizo"],["Wildschwein","Wild boar","Jabalí"],["Eichhörnchen","Squirrel","Ardilla"],["Kamel","Camel","Camello"],["Schlange","Snake","Serpiente"],["Leopard","Leopard","Leopardo"],["Faultier","Sloth","Perezoso"],["Stinktier","Skunk","Mofeta"],["Biber","Beaver","Castor"],["Elch","Moose","Alce"],["Fledermaus","Bat","Murciélago"],["Strauss","Ostrich","Avestruz"]] },
+    { name: ["Meerestiere", "Sea creatures", "Animales marinos"], words: [["Hai","Shark","Tiburón"],["Wal","Whale","Ballena"],["Delfin","Dolphin","Delfín"],["Krake","Octopus","Pulpo"],["Qualle","Jellyfish","Medusa"],["Seestern","Starfish","Estrella de mar"],["Krebs","Crab","Cangrejo"],["Hummer","Lobster","Langosta"],["Seepferdchen","Seahorse","Caballito de mar"],["Robbe","Seal","Foca"],["Walross","Walrus","Morsa"],["Muschel","Seashell","Concha"],["Rochen","Stingray","Raya"],["Kugelfisch","Pufferfish","Pez globo"],["Clownfisch","Clownfish","Pez payaso"],["Schwertfisch","Swordfish","Pez espada"],["Sägefisch","Sawfish","Pez sierra"],["Hammerhai","Hammerhead shark","Tiburón martillo"],["Seeigel","Sea urchin","Erizo de mar"],["Koralle","Coral","Coral"],["Garnele","Shrimp","Gamba"],["Meeresschildkröte","Sea turtle","Tortuga marina"],["Pinguin","Penguin","Pingüino"],["Narwal","Narwhal","Narval"],["Seelöwe","Sea lion","León marino"],["Aal","Eel","Anguila"],["Anglerfisch","Anglerfish","Rape"],["Schwertwal","Orca","Orca"],["Thunfisch","Tuna","Atún"],["Fischschwarm","School of fish","Banco de peces"]] },
+    { name: ["Vögel & Insekten", "Birds & Insects", "Aves e insectos"], words: [["Eule","Owl","Búho"],["Adler","Eagle","Águila"],["Papagei","Parrot","Loro"],["Flamingo","Flamingo","Flamenco"],["Storch","Stork","Cigüeña"],["Schwan","Swan","Cisne"],["Pfau","Peacock","Pavo real"],["Specht","Woodpecker","Pájaro carpintero"],["Tukan","Toucan","Tucán"],["Kolibri","Hummingbird","Colibrí"],["Möwe","Seagull","Gaviota"],["Rabe","Raven","Cuervo"],["Taube","Pigeon","Paloma"],["Vogelnest","Bird's nest","Nido de pájaro"],["Biene","Bee","Abeja"],["Ameise","Ant","Hormiga"],["Marienkäfer","Ladybug","Mariquita"],["Schmetterling","Butterfly","Mariposa"],["Raupe","Caterpillar","Oruga"],["Spinne","Spider","Araña"],["Libelle","Dragonfly","Libélula"],["Heuschrecke","Grasshopper","Saltamontes"],["Mücke","Mosquito","Mosquito"],["Fliege","Fly","Mosca"],["Schnecke","Snail","Caracol"],["Regenwurm","Earthworm","Lombriz"],["Glühwürmchen","Firefly","Luciérnaga"],["Skorpion","Scorpion","Escorpión"],["Bienenstock","Beehive","Colmena"],["Vogelscheuche","Scarecrow","Espantapájaros"]] },
+    { name: ["Berufe", "Jobs", "Profesiones"], words: [["Feuerwehrmann","Firefighter","Bombero"],["Koch","Chef","Cocinero"],["Arzt","Doctor","Médico"],["Pilot","Pilot","Piloto"],["Maler","Painter","Pintor"],["Polizist","Police officer","Policía"],["Zahnarzt","Dentist","Dentista"],["Gärtner","Gardener","Jardinero"],["Friseur","Hairdresser","Peluquero"],["Astronaut","Astronaut","Astronauta"],["Bauarbeiter","Construction worker","Albañil"],["Taucher","Diver","Buzo"],["Briefträger","Mail carrier","Cartero"],["Fischer","Fisherman","Pescador"],["Bäcker","Baker","Panadero"],["Metzger","Butcher","Carnicero"],["Kellner","Waiter","Camarero"],["Lehrer","Teacher","Profesor"],["Tierarzt","Vet","Veterinario"],["Schreiner","Carpenter","Carpintero"],["Schornsteinfeger","Chimney sweep","Deshollinador"],["Fotograf","Photographer","Fotógrafo"],["Richter","Judge","Juez"],["Mechaniker","Mechanic","Mecánico"],["Bauer","Farmer","Granjero"],["Detektiv","Detective","Detective"],["Lokführer","Train driver","Maquinista"],["Elektriker","Electrician","Electricista"],["Schneider","Tailor","Sastre"],["Imker","Beekeeper","Apicultor"]] },
+    { name: ["Sport", "Sports", "Deportes"], words: [["Fussball","Soccer","Fútbol"],["Tennis","Tennis","Tenis"],["Skifahren","Skiing","Esquí"],["Schwimmen","Swimming","Natación"],["Boxen","Boxing","Boxeo"],["Golf","Golf","Golf"],["Basketball","Basketball","Baloncesto"],["Radfahren","Cycling","Ciclismo"],["Bogenschiessen","Archery","Tiro con arco"],["Surfen","Surfing","Surf"],["Eishockey","Ice hockey","Hockey sobre hielo"],["Gewichtheben","Weightlifting","Halterofilia"],["Tischtennis","Table tennis","Tenis de mesa"],["Reiten","Horse riding","Equitación"],["Bowling","Bowling","Bolos"],["Volleyball","Volleyball","Voleibol"],["Handball","Handball","Balonmano"],["Badminton","Badminton","Bádminton"],["Rudern","Rowing","Remo"],["Hochsprung","High jump","Salto de altura"],["Stabhochsprung","Pole vault","Salto con pértiga"],["Karate","Karate","Kárate"],["Fechten","Fencing","Esgrima"],["Turmspringen","Diving","Salto de trampolín"],["Klettern","Climbing","Escalada"],["Marathon","Marathon","Maratón"],["Baseball","Baseball","Béisbol"],["Rugby","Rugby","Rugby"],["Hürdenlauf","Hurdles","Carrera de vallas"],["Billard","Billiards","Billar"]] },
+    { name: ["Obst & Gemüse", "Fruit & Vegetables", "Frutas y verduras"], words: [["Apfel","Apple","Manzana"],["Banane","Banana","Plátano"],["Birne","Pear","Pera"],["Kirsche","Cherry","Cereza"],["Erdbeere","Strawberry","Fresa"],["Traube","Grapes","Uvas"],["Ananas","Pineapple","Piña"],["Wassermelone","Watermelon","Sandía"],["Zitrone","Lemon","Limón"],["Orange","Orange","Naranja"],["Kiwi","Kiwi","Kiwi"],["Pfirsich","Peach","Melocotón"],["Kokosnuss","Coconut","Coco"],["Himbeere","Raspberry","Frambuesa"],["Mango","Mango","Mango"],["Avocado","Avocado","Aguacate"],["Karotte","Carrot","Zanahoria"],["Tomate","Tomato","Tomate"],["Gurke","Cucumber","Pepino"],["Kartoffel","Potato","Patata"],["Zwiebel","Onion","Cebolla"],["Knoblauch","Garlic","Ajo"],["Brokkoli","Broccoli","Brócoli"],["Maiskolben","Corn on the cob","Mazorca de maíz"],["Paprika","Bell pepper","Pimiento"],["Aubergine","Eggplant","Berenjena"],["Kürbis","Pumpkin","Calabaza"],["Erbsenschote","Pea pod","Vaina de guisantes"],["Pilz","Mushroom","Seta"],["Radieschen","Radish","Rábano"]] },
+    { name: ["Essen & Trinken", "Food & Drinks", "Comida y bebida"], words: [["Pizza","Pizza","Pizza"],["Spiegelei","Fried egg","Huevo frito"],["Hamburger","Hamburger","Hamburguesa"],["Eiscreme","Ice cream","Helado"],["Brezel","Pretzel","Pretzel"],["Kaffee","Coffee","Café"],["Spaghetti","Spaghetti","Espaguetis"],["Geburtstagskuchen","Birthday cake","Tarta de cumpleaños"],["Hotdog","Hot dog","Perrito caliente"],["Popcorn","Popcorn","Palomitas"],["Käse","Cheese","Queso"],["Croissant","Croissant","Cruasán"],["Pommes frites","French fries","Patatas fritas"],["Sandwich","Sandwich","Sándwich"],["Sushi","Sushi","Sushi"],["Donut","Donut","Dónut"],["Lutscher","Lollipop","Piruleta"],["Schokolade","Chocolate","Chocolate"],["Wurst","Sausage","Salchicha"],["Brot","Bread","Pan"],["Suppe","Soup","Sopa"],["Pfannkuchen","Pancake","Tortita"],["Muffin","Muffin","Magdalena"],["Milch","Milk","Leche"],["Honig","Honey","Miel"],["Taco","Taco","Taco"],["Salat","Salad","Ensalada"],["Brathähnchen","Roast chicken","Pollo asado"],["Limonade","Lemonade","Limonada"],["Eis am Stiel","Popsicle","Polo"]] },
+    { name: ["Verkehrsmittel", "Transport", "Transporte"], words: [["Fahrrad","Bicycle","Bicicleta"],["Helikopter","Helicopter","Helicóptero"],["Segelboot","Sailboat","Velero"],["Zug","Train","Tren"],["Rakete","Rocket","Cohete"],["Traktor","Tractor","Tractor"],["Heissluftballon","Hot-air balloon","Globo aerostático"],["U-Boot","Submarine","Submarino"],["Motorrad","Motorcycle","Moto"],["Seilbahn","Cable car","Teleférico"],["Bus","Bus","Autobús"],["Flugzeug","Airplane","Avión"],["Kinderwagen","Baby stroller","Cochecito de bebé"],["Skateboard","Skateboard","Monopatín"],["Feuerwehrauto","Fire truck","Camión de bomberos"],["Krankenwagen","Ambulance","Ambulancia"],["Polizeiauto","Police car","Coche de policía"],["Taxi","Taxi","Taxi"],["Lastwagen","Truck","Camión"],["Bagger","Excavator","Excavadora"],["Strassenbahn","Tram","Tranvía"],["Kreuzfahrtschiff","Cruise ship","Crucero"],["Ruderboot","Rowboat","Bote de remos"],["Tretroller","Kick scooter","Patinete"],["Dampflok","Steam locomotive","Locomotora de vapor"],["Rennwagen","Race car","Coche de carreras"],["Wohnmobil","Camper van","Autocaravana"],["Zeppelin","Airship","Dirigible"],["Gleitschirm","Paraglider","Parapente"],["Einrad","Unicycle","Monociclo"]] },
+    { name: ["Küche", "Kitchen", "Cocina"], words: [["Toaster","Toaster","Tostadora"],["Teekanne","Teapot","Tetera"],["Bratpfanne","Frying pan","Sartén"],["Kühlschrank","Fridge","Nevera"],["Mikrowelle","Microwave","Microondas"],["Kochtopf","Cooking pot","Olla"],["Schneebesen","Whisk","Batidor"],["Nudelholz","Rolling pin","Rodillo"],["Messer","Knife","Cuchillo"],["Gabel","Fork","Tenedor"],["Löffel","Spoon","Cuchara"],["Teller","Plate","Plato"],["Tasse","Cup","Taza"],["Weinglas","Wine glass","Copa de vino"],["Korkenzieher","Corkscrew","Sacacorchos"],["Mixer","Blender","Batidora"],["Kaffeemaschine","Coffee machine","Cafetera"],["Backofen","Oven","Horno"],["Küchenwaage","Kitchen scale","Báscula de cocina"],["Reibe","Grater","Rallador"],["Suppenkelle","Ladle","Cucharón"],["Sieb","Strainer","Colador"],["Schürze","Apron","Delantal"],["Kochmütze","Chef's hat","Gorro de cocinero"],["Eierbecher","Egg cup","Huevera"],["Salzstreuer","Salt shaker","Salero"],["Wasserkocher","Kettle","Hervidor"],["Geschirrspüler","Dishwasher","Lavavajillas"],["Pfeffermühle","Pepper mill","Molinillo de pimienta"],["Flaschenöffner","Bottle opener","Abrebotellas"]] },
+    { name: ["Wohnen & Haushalt", "Home", "Hogar"], words: [["Staubsauger","Vacuum cleaner","Aspiradora"],["Bügeleisen","Iron","Plancha"],["Wecker","Alarm clock","Despertador"],["Regenschirm","Umbrella","Paraguas"],["Glühbirne","Light bulb","Bombilla"],["Waschmaschine","Washing machine","Lavadora"],["Besen","Broom","Escoba"],["Bett","Bed","Cama"],["Badewanne","Bathtub","Bañera"],["Sofa","Sofa","Sofá"],["Stehlampe","Floor lamp","Lámpara de pie"],["Spiegel","Mirror","Espejo"],["Stuhl","Chair","Silla"],["Tisch","Table","Mesa"],["Kleiderschrank","Wardrobe","Armario"],["Kerze","Candle","Vela"],["Teppich","Rug","Alfombra"],["Vorhang","Curtain","Cortina"],["Kamin","Fireplace","Chimenea"],["Treppe","Stairs","Escalera"],["Fenster","Window","Ventana"],["Türklingel","Doorbell","Timbre"],["Schlüssel","Key","Llave"],["Bilderrahmen","Picture frame","Marco de fotos"],["Kissen","Pillow","Almohada"],["Dusche","Shower","Ducha"],["Toilette","Toilet","Inodoro"],["Wäscheleine","Clothesline","Tendedero"],["Mülleimer","Trash can","Cubo de basura"],["Kleiderbügel","Coat hanger","Percha"]] },
+    { name: ["Natur & Wetter", "Nature & Weather", "Naturaleza y clima"], words: [["Regenbogen","Rainbow","Arcoíris"],["Blitz","Lightning","Rayo"],["Vulkan","Volcano","Volcán"],["Wolke","Cloud","Nube"],["Sonne","Sun","Sol"],["Mond","Moon","Luna"],["Baum","Tree","Árbol"],["Kaktus","Cactus","Cactus"],["Berg","Mountain","Montaña"],["Wasserfall","Waterfall","Cascada"],["Tornado","Tornado","Tornado"],["Insel","Island","Isla"],["Blume","Flower","Flor"],["Regen","Rain","Lluvia"],["Fluss","River","Río"],["Höhle","Cave","Cueva"],["Wüste","Desert","Desierto"],["Palme","Palm tree","Palmera"],["Sonnenblume","Sunflower","Girasol"],["Rose","Rose","Rosa"],["Tulpe","Tulip","Tulipán"],["Kleeblatt","Four-leaf clover","Trébol"],["Eichel","Acorn","Bellota"],["Tannenzapfen","Pine cone","Piña de pino"],["Herbstblatt","Autumn leaf","Hoja de otoño"],["Pusteblume","Dandelion","Diente de león"],["Seerose","Water lily","Nenúfar"],["Sonnenuntergang","Sunset","Puesta de sol"],["Tannenbaum","Fir tree","Abeto"],["Bambus","Bamboo","Bambú"]] },
+    { name: ["Musik", "Music", "Música"], words: [["Gitarre","Guitar","Guitarra"],["Klavier","Piano","Piano"],["Trommel","Drum","Tambor"],["Geige","Violin","Violín"],["Trompete","Trumpet","Trompeta"],["Harfe","Harp","Arpa"],["Blockflöte","Recorder","Flauta dulce"],["Saxofon","Saxophone","Saxofón"],["Xylofon","Xylophone","Xilófono"],["Waldhorn","French horn","Trompa"],["Akkordeon","Accordion","Acordeón"],["Triangel","Triangle","Triángulo"],["Dudelsack","Bagpipes","Gaita"],["Kontrabass","Double bass","Contrabajo"],["Mundharmonika","Harmonica","Armónica"],["Mikrofon","Microphone","Micrófono"],["Notenschlüssel","Treble clef","Clave de sol"],["Musiknote","Musical note","Nota musical"],["Dirigent","Conductor","Director de orquesta"],["Schlagzeug","Drum kit","Batería"],["Posaune","Trombone","Trombón"],["Tuba","Tuba","Tuba"],["Banjo","Banjo","Banjo"],["Rassel","Maracas","Maracas"],["Ukulele","Ukulele","Ukelele"],["Plattenspieler","Record player","Tocadiscos"],["Orgel","Organ","Órgano"],["Tamburin","Tambourine","Pandereta"],["Metronom","Metronome","Metrónomo"],["Panflöte","Pan flute","Flauta de pan"]] },
+    { name: ["Kleidung & Accessoires", "Clothing & Accessories", "Ropa y accesorios"], words: [["Krawatte","Tie","Corbata"],["Socke","Sock","Calcetín"],["Handschuh","Glove","Guante"],["Stiefel","Boot","Bota"],["Kleid","Dress","Vestido"],["Zylinder","Top hat","Sombrero de copa"],["Brille","Glasses","Gafas"],["Schal","Scarf","Bufanda"],["Mütze","Beanie","Gorro"],["Gürtel","Belt","Cinturón"],["Pullover","Sweater","Jersey"],["Bikini","Bikini","Bikini"],["Rucksack","Backpack","Mochila"],["Hosenträger","Suspenders","Tirantes"],["Turnschuh","Sneaker","Zapatilla deportiva"],["Hose","Trousers","Pantalones"],["T-Shirt","T-shirt","Camiseta"],["Rock","Skirt","Falda"],["Hemd","Shirt","Camisa"],["Schlafanzug","Pajamas","Pijama"],["Halskette","Necklace","Collar"],["Ohrring","Earring","Pendiente"],["Armbanduhr","Wristwatch","Reloj de pulsera"],["Handtasche","Handbag","Bolso"],["Regenmantel","Raincoat","Impermeable"],["Sandale","Sandal","Sandalia"],["Stöckelschuh","High heel","Zapato de tacón"],["Unterhose","Underpants","Calzoncillos"],["Geldbeutel","Wallet","Cartera"],["Reissverschluss","Zipper","Cremallera"]] },
+    { name: ["Märchen & Fantasie", "Fairy Tales & Fantasy", "Cuentos y fantasía"], words: [["Drache","Dragon","Dragón"],["Einhorn","Unicorn","Unicornio"],["Hexe","Witch","Bruja"],["Ritter","Knight","Caballero"],["Prinzessin","Princess","Princesa"],["Schloss","Castle","Castillo"],["Zauberstab","Magic wand","Varita mágica"],["Meerjungfrau","Mermaid","Sirena"],["Riese","Giant","Gigante"],["Zwerg","Dwarf","Enano"],["Gespenst","Ghost","Fantasma"],["Vampir","Vampire","Vampiro"],["Zauberer","Wizard","Mago"],["Fee","Fairy","Hada"],["Troll","Troll","Trol"],["Krone","Crown","Corona"],["Thron","Throne","Trono"],["Kristallkugel","Crystal ball","Bola de cristal"],["Zaubertrank","Magic potion","Poción mágica"],["Fliegender Teppich","Flying carpet","Alfombra voladora"],["Wunderlampe","Magic lamp","Lámpara mágica"],["Hexenbesen","Witch's broom","Escoba de bruja"],["Froschkönig","Frog prince","Príncipe rana"],["Lebkuchenhaus","Gingerbread house","Casita de jengibre"],["Pegasus","Pegasus","Pegaso"],["Zyklop","Cyclops","Cíclope"],["Werwolf","Werewolf","Hombre lobo"],["Kobold","Goblin","Duende"],["Zauberhut","Magic hat","Sombrero de mago"],["Bohnenranke","Beanstalk","Planta de judías gigante"]] },
+    { name: ["Schule & Büro", "School & Office", "Escuela y oficina"], words: [["Bleistift","Pencil","Lápiz"],["Lineal","Ruler","Regla"],["Globus","Globe","Globo terráqueo"],["Taschenrechner","Calculator","Calculadora"],["Büroklammer","Paper clip","Clip"],["Tafel","Blackboard","Pizarra"],["Schulranzen","School bag","Mochila escolar"],["Radiergummi","Eraser","Goma de borrar"],["Lupe","Magnifying glass","Lupa"],["Zirkel","Compass (drawing)","Compás"],["Briefumschlag","Envelope","Sobre"],["Kalender","Calendar","Calendario"],["Drucker","Printer","Impresora"],["Spitzer","Pencil sharpener","Sacapuntas"],["Schere","Scissors","Tijeras"],["Klebestift","Glue stick","Barra de pegamento"],["Füller","Fountain pen","Pluma estilográfica"],["Buch","Book","Libro"],["Hefter","Stapler","Grapadora"],["Kreide","Chalk","Tiza"],["Pinnwand","Bulletin board","Tablón de corcho"],["Stempel","Rubber stamp","Sello"],["Federmäppchen","Pencil case","Estuche"],["Landkarte","Map","Mapa"],["Bürostuhl","Office chair","Silla de oficina"],["Aktenkoffer","Briefcase","Maletín"],["Textmarker","Highlighter","Rotulador fluorescente"],["Ordner","Binder","Archivador"],["Klebeband","Sticky tape","Cinta adhesiva"],["Abakus","Abacus","Ábaco"]] },
+    { name: ["Strand & Ferien", "Beach & Holidays", "Playa y vacaciones"], words: [["Sandburg","Sandcastle","Castillo de arena"],["Sonnenschirm","Beach umbrella","Sombrilla"],["Leuchtturm","Lighthouse","Faro"],["Liegestuhl","Deck chair","Tumbona"],["Rettungsring","Life ring","Salvavidas"],["Welle","Wave","Ola"],["Sandeimer","Sand bucket","Cubo de playa"],["Schnorchel","Snorkel","Esnórquel"],["Badetuch","Beach towel","Toalla de playa"],["Luftmatratze","Air mattress","Colchoneta"],["Sonnenbrille","Sunglasses","Gafas de sol"],["Sonnencreme","Sunscreen","Protector solar"],["Koffer","Suitcase","Maleta"],["Reisepass","Passport","Pasaporte"],["Postkarte","Postcard","Postal"],["Flipflops","Flip-flops","Chanclas"],["Badehose","Swim trunks","Bañador"],["Hängematte","Hammock","Hamaca"],["Wasserball","Beach ball","Pelota de playa"],["Taucherbrille","Diving mask","Gafas de buceo"],["Schwimmflügel","Armbands","Manguitos"],["Cocktail","Cocktail","Cóctel"],["Surfbrett","Surfboard","Tabla de surf"],["Fussspuren","Footprints","Huellas"],["Rettungsschwimmer","Lifeguard","Socorrista"],["Flaschenpost","Message in a bottle","Mensaje en una botella"],["Wasserski","Water skiing","Esquí acuático"],["Bootssteg","Pier","Muelle"],["Wasserrutsche","Water slide","Tobogán acuático"],["Sprungbrett","Diving board","Trampolín"]] },
+    { name: ["Werkzeuge & Garten", "Tools & Garden", "Herramientas y jardín"], words: [["Hammer","Hammer","Martillo"],["Säge","Saw","Sierra"],["Schraubenzieher","Screwdriver","Destornillador"],["Zange","Pliers","Alicates"],["Leiter","Ladder","Escalera de mano"],["Schubkarre","Wheelbarrow","Carretilla"],["Axt","Axe","Hacha"],["Bohrmaschine","Drill","Taladro"],["Schaufel","Shovel","Pala"],["Rechen","Rake","Rastrillo"],["Nagel","Nail","Clavo"],["Schraube","Screw","Tornillo"],["Farbrolle","Paint roller","Rodillo de pintura"],["Werkzeugkasten","Toolbox","Caja de herramientas"],["Giesskanne","Watering can","Regadera"],["Rasenmäher","Lawn mower","Cortacésped"],["Gartenschlauch","Garden hose","Manguera"],["Blumentopf","Flower pot","Maceta"],["Gartenzwerg","Garden gnome","Gnomo de jardín"],["Briefkasten","Mailbox","Buzón"],["Heckenschere","Hedge trimmer","Cortasetos"],["Schraubenschlüssel","Wrench","Llave inglesa"],["Massband","Tape measure","Cinta métrica"],["Wasserwaage","Spirit level","Nivel de burbuja"],["Pinsel","Paintbrush","Pincel"],["Kettensäge","Chainsaw","Motosierra"],["Taschenlampe","Flashlight","Linterna"],["Vorhängeschloss","Padlock","Candado"],["Gewächshaus","Greenhouse","Invernadero"],["Magnet","Magnet","Imán"]] },
+    { name: ["Körper & Gesundheit", "Body & Health", "Cuerpo y salud"], words: [["Auge","Eye","Ojo"],["Nase","Nose","Nariz"],["Ohr","Ear","Oreja"],["Hand","Hand","Mano"],["Fuss","Foot","Pie"],["Zahn","Tooth","Diente"],["Herz","Heart","Corazón"],["Skelett","Skeleton","Esqueleto"],["Gehirn","Brain","Cerebro"],["Bart","Beard","Barba"],["Zunge","Tongue","Lengua"],["Muskel","Muscle","Músculo"],["Fingerabdruck","Fingerprint","Huella dactilar"],["Lippen","Lips","Labios"],["Zopf","Braid","Trenza"],["Zahnbürste","Toothbrush","Cepillo de dientes"],["Pflaster","Band-aid","Tirita"],["Spritze","Syringe","Jeringuilla"],["Fieberthermometer","Thermometer","Termómetro"],["Rollstuhl","Wheelchair","Silla de ruedas"],["Krücken","Crutches","Muletas"],["Stethoskop","Stethoscope","Estetoscopio"],["Tablette","Pill","Pastilla"],["Gipsbein","Leg cast","Pierna escayolada"],["Daumen","Thumb","Pulgar"],["Knochen","Bone","Hueso"],["Bauchnabel","Belly button","Ombligo"],["Augenbraue","Eyebrow","Ceja"],["Zahnspange","Braces","Ortodoncia"],["Seife","Soap","Jabón"]] },
+    { name: ["Spielzeug & Spielplatz", "Toys & Playground", "Juguetes y parque infantil"], words: [["Teddybär","Teddy bear","Osito de peluche"],["Puppe","Doll","Muñeca"],["Kreisel","Spinning top","Peonza"],["Jo-Jo","Yo-yo","Yoyó"],["Würfel","Dice","Dado"],["Schaukel","Swing","Columpio"],["Rutsche","Slide","Tobogán"],["Wippe","Seesaw","Balancín"],["Sandkasten","Sandbox","Arenero"],["Trampolin","Trampoline","Cama elástica"],["Klettergerüst","Climbing frame","Estructura para trepar"],["Seifenblase","Soap bubble","Pompa de jabón"],["Luftballon","Balloon","Globo"],["Murmeln","Marbles","Canicas"],["Bauklötze","Building blocks","Bloques de construcción"],["Schaukelpferd","Rocking horse","Caballito balancín"],["Puzzle","Jigsaw puzzle","Rompecabezas"],["Spielzeugeisenbahn","Toy train","Tren de juguete"],["Springseil","Jump rope","Comba"],["Hula-Hoop-Reifen","Hula hoop","Aro de hula hoop"],["Wasserpistole","Water gun","Pistola de agua"],["Zauberwürfel","Puzzle cube","Cubo de Rubik"],["Dominosteine","Dominoes","Fichas de dominó"],["Puppentheater","Puppet theater","Teatro de títeres"],["Spielzeugauto","Toy car","Coche de juguete"],["Knete","Play dough","Plastilina"],["Kaleidoskop","Kaleidoscope","Caleidoscopio"],["Papierflieger","Paper airplane","Avión de papel"],["Murmelbahn","Marble run","Circuito de canicas"],["Puppenhaus","Dollhouse","Casa de muñecas"]] },
+    { name: ["Gebäude & Bauwerke", "Buildings & Landmarks", "Edificios y monumentos"], words: [["Kirche","Church","Iglesia"],["Iglu","Igloo","Iglú"],["Pyramide","Pyramid","Pirámide"],["Wolkenkratzer","Skyscraper","Rascacielos"],["Brücke","Bridge","Puente"],["Windmühle","Windmill","Molino de viento"],["Bauernhof","Farm","Granja"],["Tankstelle","Gas station","Gasolinera"],["Eiffelturm","Eiffel Tower","Torre Eiffel"],["Stadion","Stadium","Estadio"],["Hundehütte","Doghouse","Caseta de perro"],["Bahnhof","Train station","Estación de tren"],["Krankenhaus","Hospital","Hospital"],["Baumhaus","Treehouse","Casa del árbol"],["Gefängnis","Prison","Cárcel"],["Moschee","Mosque","Mezquita"],["Staudamm","Dam","Presa"],["Schiefer Turm von Pisa","Leaning Tower of Pisa","Torre inclinada de Pisa"],["Freiheitsstatue","Statue of Liberty","Estatua de la Libertad"],["Fabrik","Factory","Fábrica"],["Schule","School","Escuela"],["Kino","Cinema","Cine"],["Supermarkt","Supermarket","Supermercado"],["Flughafen","Airport","Aeropuerto"],["Hafen","Harbor","Puerto"],["Blockhütte","Log cabin","Cabaña de troncos"],["Tunnel","Tunnel","Túnel"],["Pfahlbau","Stilt house","Palafito"],["Wasserturm","Water tower","Torre de agua"],["Big Ben","Big Ben","Big Ben"]] },
+    { name: ["Feste & Feiertage", "Holidays & Celebrations", "Fiestas y celebraciones"], words: [["Weihnachtsbaum","Christmas tree","Árbol de Navidad"],["Osterhase","Easter bunny","Conejo de Pascua"],["Kürbislaterne","Jack-o'-lantern","Calabaza de Halloween"],["Geschenk","Present","Regalo"],["Feuerwerk","Fireworks","Fuegos artificiales"],["Nikolaus","Santa Claus","Papá Noel"],["Adventskranz","Advent wreath","Corona de Adviento"],["Partyhut","Party hat","Gorro de fiesta"],["Konfetti","Confetti","Confeti"],["Karnevalsmaske","Carnival mask","Máscara de carnaval"],["Ehering","Wedding ring","Anillo de boda"],["Zuckerstange","Candy cane","Bastón de caramelo"],["Osterei","Easter egg","Huevo de Pascua"],["Hochzeitstorte","Wedding cake","Tarta nupcial"],["Brautkleid","Wedding dress","Vestido de novia"],["Christbaumkugel","Christmas ornament","Bola de Navidad"],["Engel","Angel","Ángel"],["Rentier","Reindeer","Reno"],["Lampion","Paper lantern","Farolillo"],["Spinnennetz","Spider web","Telaraña"],["Liebesbrief","Love letter","Carta de amor"],["Wunderkerze","Sparkler","Bengala"],["Girlande","Garland","Guirnalda"],["Krippe","Nativity scene","Belén"],["Osterkorb","Easter basket","Cesta de Pascua"],["Grabstein","Gravestone","Lápida"],["Partytröte","Party horn","Matasuegras"],["Lebkuchenmann","Gingerbread man","Hombre de jengibre"],["Champagner","Champagne","Champán"],["Adventskalender","Advent calendar","Calendario de Adviento"]] },
+    { name: ["Technik & Elektronik", "Technology", "Tecnología"], words: [["Handy","Mobile phone","Móvil"],["Laptop","Laptop","Portátil"],["Fernseher","Television","Televisor"],["Kopfhörer","Headphones","Auriculares"],["Lautsprecher","Loudspeaker","Altavoz"],["Fotoapparat","Camera","Cámara de fotos"],["Roboter","Robot","Robot"],["Drohne","Drone","Dron"],["Fernbedienung","Remote control","Mando a distancia"],["Tastatur","Keyboard","Teclado"],["Computermaus","Computer mouse","Ratón de ordenador"],["Batterie","Battery","Pila"],["Steckdose","Power socket","Enchufe"],["Joystick","Joystick","Joystick"],["Tablet","Tablet","Tableta"],["Satellitenschüssel","Satellite dish","Antena parabólica"],["Radio","Radio","Radio"],["Wählscheibentelefon","Rotary phone","Teléfono de disco"],["Ventilator","Fan","Ventilador"],["USB-Stick","USB stick","Memoria USB"],["Solarpanel","Solar panel","Panel solar"],["Windrad","Wind turbine","Aerogenerador"],["Föhn","Hair dryer","Secador de pelo"],["Antenne","Antenna","Antena"],["Ladekabel","Charging cable","Cable de carga"],["Videokamera","Video camera","Videocámara"],["Walkie-Talkie","Walkie-talkie","Walkie-talkie"],["Strichcode","Barcode","Código de barras"],["3D-Drucker","3D printer","Impresora 3D"],["Spielkonsole","Game console","Videoconsola"]] },
+    { name: ["Weltraum & Wissenschaft", "Space & Science", "Espacio y ciencia"], words: [["Planet","Planet","Planeta"],["Saturn","Saturn","Saturno"],["Stern","Star","Estrella"],["Sternschnuppe","Shooting star","Estrella fugaz"],["Komet","Comet","Cometa"],["Ufo","UFO","OVNI"],["Ausserirdischer","Alien","Extraterrestre"],["Raumstation","Space station","Estación espacial"],["Satellit","Satellite","Satélite"],["Teleskop","Telescope","Telescopio"],["Raumanzug","Spacesuit","Traje espacial"],["Sonnenfinsternis","Solar eclipse","Eclipse solar"],["Mikroskop","Microscope","Microscopio"],["Reagenzglas","Test tube","Tubo de ensayo"],["Atom","Atom","Átomo"],["DNA","DNA","ADN"],["Kristall","Crystal","Cristal"],["Marsrover","Mars rover","Róver marciano"],["Sternbild","Constellation","Constelación"],["Laborkittel","Lab coat","Bata de laboratorio"],["Fossil","Fossil","Fósil"],["Zahnrad","Gear","Engranaje"],["Prisma","Prism","Prisma"],["Sonnensystem","Solar system","Sistema solar"],["Krater","Crater","Cráter"],["Schwarzes Loch","Black hole","Agujero negro"],["Meteorit","Meteorite","Meteorito"],["Pipette","Pipette","Pipeta"],["Zeitmaschine","Time machine","Máquina del tiempo"],["Petrischale","Petri dish","Placa de Petri"]] },
+    { name: ["Winter & Berge", "Winter & Mountains", "Invierno y montaña"], words: [["Schneemann","Snowman","Muñeco de nieve"],["Snowboard","Snowboard","Snowboard"],["Schlitten","Sled","Trineo"],["Skilift","Ski lift","Telesquí"],["Schneeflocke","Snowflake","Copo de nieve"],["Eiszapfen","Icicle","Carámbano"],["Schneeball","Snowball","Bola de nieve"],["Schlittschuh","Ice skate","Patín de hielo"],["Skibrille","Ski goggles","Gafas de esquí"],["Murmeltier","Marmot","Marmota"],["Steinbock","Ibex","Íbice"],["Edelweiss","Edelweiss","Edelweiss"],["Bernhardiner","St. Bernard dog","San Bernardo"],["Kuhglocke","Cowbell","Cencerro"],["Gipfelkreuz","Summit cross","Cruz de cumbre"],["Lawine","Avalanche","Avalancha"],["Berghütte","Mountain hut","Refugio de montaña"],["Wanderschuh","Hiking boot","Bota de montaña"],["Skistöcke","Ski poles","Bastones de esquí"],["Schneepflug","Snowplow","Quitanieves"],["Heisse Schokolade","Hot chocolate","Chocolate caliente"],["Ohrenschützer","Earmuffs","Orejeras"],["Skispringen","Ski jumping","Salto de esquí"],["Langlauf","Cross-country skiing","Esquí de fondo"],["Eisfischen","Ice fishing","Pesca en hielo"],["Schneeschuh","Snowshoe","Raqueta de nieve"],["Gletscher","Glacier","Glaciar"],["Schneeengel","Snow angel","Ángel de nieve"],["Pistenraupe","Snowcat","Máquina pisanieves"],["Bergsteiger","Mountaineer","Alpinista"]] },
+    { name: ["Stadt & Strasse", "City & Street", "Ciudad y calle"], words: [["Ampel","Traffic light","Semáforo"],["Zebrastreifen","Crosswalk","Paso de cebra"],["Strassenlaterne","Street lamp","Farola"],["Hydrant","Fire hydrant","Boca de incendios"],["Parkuhr","Parking meter","Parquímetro"],["Bushaltestelle","Bus stop","Parada de autobús"],["Stoppschild","Stop sign","Señal de stop"],["Kreisverkehr","Roundabout","Rotonda"],["Baustelle","Construction site","Obras"],["Leitkegel","Traffic cone","Cono de tráfico"],["Gullydeckel","Manhole cover","Tapa de alcantarilla"],["Parkbank","Park bench","Banco del parque"],["Brunnen","Fountain","Fuente"],["Kiosk","Newsstand","Quiosco"],["Telefonzelle","Phone booth","Cabina telefónica"],["Rolltreppe","Escalator","Escalera mecánica"],["Aufzug","Elevator","Ascensor"],["Einkaufswagen","Shopping cart","Carrito de la compra"],["Graffiti","Graffiti","Grafiti"],["Stau","Traffic jam","Atasco"],["Denkmal","Monument","Monumento"],["Strassenmusiker","Street musician","Músico callejero"],["Wegweiser","Signpost","Poste indicador"],["Schaufenster","Shop window","Escaparate"],["Geldautomat","ATM","Cajero automático"],["Marktstand","Market stall","Puesto de mercado"],["Müllauto","Garbage truck","Camión de la basura"],["Fahrradständer","Bike rack","Aparcabicis"],["Einbahnstrasse","One-way street","Calle de sentido único"],["Hochhaus","High-rise","Edificio alto"]] },
+    { name: ["Zirkus & Jahrmarkt", "Circus & Fair", "Circo y feria"], words: [["Clown","Clown","Payaso"],["Jongleur","Juggler","Malabarista"],["Seiltänzer","Tightrope walker","Funambulista"],["Zirkuszelt","Circus tent","Carpa de circo"],["Dompteur","Lion tamer","Domador"],["Feuerspucker","Fire breather","Escupefuego"],["Trapez","Trapeze","Trapecio"],["Akrobat","Acrobat","Acróbata"],["Riesenrad","Ferris wheel","Noria"],["Karussell","Carousel","Tiovivo"],["Achterbahn","Roller coaster","Montaña rusa"],["Autoscooter","Bumper cars","Autos de choque"],["Zuckerwatte","Cotton candy","Algodón de azúcar"],["Kettenkarussell","Swing ride","Sillas voladoras"],["Schiessbude","Shooting gallery","Caseta de tiro"],["Geisterbahn","Ghost train","Tren fantasma"],["Zirkusdirektor","Ringmaster","Director de circo"],["Messerwerfer","Knife thrower","Lanzador de cuchillos"],["Feuerreif","Ring of fire","Aro de fuego"],["Stelzenläufer","Stilt walker","Zancudo"],["Dosenwerfen","Can toss","Tumbalatas"],["Entenangeln","Duck fishing game","Pesca de patitos"],["Bauchredner","Ventriloquist","Ventrílocuo"],["Wahrsagerin","Fortune teller","Adivina"],["Glücksrad","Wheel of fortune","Rueda de la fortuna"],["Spiegelkabinett","Hall of mirrors","Laberinto de espejos"],["Menschliche Kanonenkugel","Human cannonball","Hombre bala"],["Gebrannte Mandeln","Candied almonds","Almendras garrapiñadas"],["Losbude","Raffle stand","Caseta de rifas"],["Schwertschlucker","Sword swallower","Tragasables"]] },
+    { name: ["Tätigkeiten", "Actions", "Acciones"], words: [["Schlafen","Sleeping","Dormir"],["Tanzen","Dancing","Bailar"],["Lachen","Laughing","Reír"],["Weinen","Crying","Llorar"],["Niesen","Sneezing","Estornudar"],["Gähnen","Yawning","Bostezar"],["Kochen","Cooking","Cocinar"],["Lesen","Reading","Leer"],["Schreiben","Writing","Escribir"],["Singen","Singing","Cantar"],["Pfeifen","Whistling","Silbar"],["Klatschen","Clapping","Aplaudir"],["Winken","Waving","Saludar con la mano"],["Rennen","Running","Correr"],["Springen","Jumping","Saltar"],["Tauchen","Scuba diving","Bucear"],["Zähne putzen","Brushing teeth","Cepillarse los dientes"],["Telefonieren","Making a phone call","Hablar por teléfono"],["Malen","Painting a picture","Pintar un cuadro"],["Trinken","Drinking","Beber"],["Küssen","Kissing","Besar"],["Schnarchen","Snoring","Roncar"],["Frieren","Freezing","Pasar frío"],["Schwitzen","Sweating","Sudar"],["Umarmen","Hugging","Abrazar"],["Stolpern","Tripping","Tropezar"],["Flüstern","Whispering","Susurrar"],["Kopfstand","Headstand","Hacer el pino"],["Liegestütze","Push-ups","Flexiones"],["Seilziehen","Tug of war","Tira y afloja"]] },
+    { name: ["Geschichte & Abenteuer", "History & Adventure", "Historia y aventura"], words: [["Wikinger","Viking","Vikingo"],["Pirat","Pirate","Pirata"],["Schatzkiste","Treasure chest","Cofre del tesoro"],["Schatzkarte","Treasure map","Mapa del tesoro"],["Mumie","Mummy","Momia"],["Dinosaurier","Dinosaur","Dinosaurio"],["Höhlenmensch","Caveman","Cavernícola"],["Kolosseum","Colosseum","Coliseo"],["Chinesische Mauer","Great Wall of China","Gran Muralla China"],["Gladiator","Gladiator","Gladiador"],["Kanone","Cannon","Cañón"],["Piratenschiff","Pirate ship","Barco pirata"],["Kompass","Compass","Brújula"],["Cowboy","Cowboy","Vaquero"],["Sheriffstern","Sheriff's badge","Estrella de sheriff"],["Lasso","Lasso","Lazo"],["Planwagen","Covered wagon","Carreta"],["Steckbrief","Wanted poster","Cartel de \"Se busca\""],["Schwert","Sword","Espada"],["Katapult","Catapult","Catapulta"],["Ritterhelm","Knight's helmet","Yelmo"],["Musketier","Musketeer","Mosquetero"],["Samurai","Samurai","Samurái"],["Mammut","Mammoth","Mamut"],["Säbelzahntiger","Saber-toothed tiger","Tigre dientes de sable"],["Höhlenmalerei","Cave painting","Pintura rupestre"],["Pharao","Pharaoh","Faraón"],["Sphinx","Sphinx","Esfinge"],["Augenklappe","Eye patch","Parche en el ojo"],["Holzbein","Wooden leg","Pata de palo"]] },
+    { name: ["Hobbys & Freizeit", "Hobbies & Leisure", "Aficiones y ocio"], words: [["Schach","Chess","Ajedrez"],["Lagerfeuer","Campfire","Hoguera"],["Angel","Fishing rod","Caña de pescar"],["Zelt","Tent","Tienda de campaña"],["Spielkarten","Playing cards","Naipes"],["Wollknäuel","Ball of yarn","Ovillo de lana"],["Staffelei","Easel","Caballete"],["Picknickkorb","Picnic basket","Cesta de picnic"],["Grill","Barbecue grill","Barbacoa"],["Modellflugzeug","Model airplane","Avión de modelismo"],["Aquarium","Aquarium","Acuario"],["Briefmarke","Postage stamp","Sello de correos"],["Origami","Origami","Papiroflexia"],["Kreuzworträtsel","Crossword","Crucigrama"],["Töpferscheibe","Potter's wheel","Torno de alfarero"],["Nähmaschine","Sewing machine","Máquina de coser"],["Yoga","Yoga","Yoga"],["3D-Brille","3D glasses","Gafas 3D"],["Brettspiel","Board game","Juego de mesa"],["Dartscheibe","Dartboard","Diana"],["Minigolf","Mini golf","Minigolf"],["Fotoalbum","Photo album","Álbum de fotos"],["Fernglas","Binoculars","Prismáticos"],["Schlauchboot","Inflatable boat","Bote hinchable"],["Sudoku","Sudoku","Sudoku"],["Kanu","Canoe","Canoa"],["Schlafsack","Sleeping bag","Saco de dormir"],["Wanderkarte","Hiking map","Mapa de senderismo"],["Tagebuch","Diary","Diario"],["Fallschirmspringen","Skydiving","Paracaidismo"]] }
   ];
   var THEMEN_PRO_SPIEL = 6, WOERTER_PRO_THEMA = 10;
   var TOTAL = THEMEN_PRO_SPIEL * WOERTER_PRO_THEMA;
+  var STORAGE_KEY = "zrag-state-v6";
+  var MAX_PLAYERS = 9, MIN_PLAYERS = 2, LOW_SECONDS = 10;
+
+  var lang = "de";           // Start immer auf Deutsch
+  function L() { return LANGS.indexOf(lang); }
+  function t(key, params) {
+    var s = I18N[lang][key];
+    if (params) Object.keys(params).forEach(function (k) { s = s.split("{" + k + "}").join(params[k]); });
+    return s;
+  }
 
   function shuffle(arr) {
     var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; }
     return a;
   }
-  // Zufällige Auswahl: 6 Themen aus dem Pool, je 10 Wörter
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  // Zufällige Auswahl: 6 Themen aus dem Pool, je 10 Wörter (als Indizes, damit die Sprache jederzeit wechseln kann)
   function drawThemes() {
-    return shuffle(THEMEN_POOL).slice(0, THEMEN_PRO_SPIEL).map(function (t) {
-      return { name: t.name, woerter: shuffle(t.woerter).slice(0, WOERTER_PRO_THEMA) };
+    return shuffle(range(POOL.length)).slice(0, THEMEN_PRO_SPIEL).map(function (p) {
+      return { p: p, w: shuffle(range(POOL[p].words.length)).slice(0, WOERTER_PRO_THEMA) };
     });
   }
-  var STORAGE_KEY = "zrag-state-v5";
-  var MAX_PLAYERS = 9, MIN_PLAYERS = 2, LOW_SECONDS = 10;
+  function topicName(ti) { return POOL[state.themen[ti].p].name[L()]; }
+  function wordText(ti, wi) { var th = state.themen[ti]; return POOL[th.p].words[th.w[wi]][L()]; }
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {};
-  ["meta", "setup", "game", "end", "playerList", "btnAddPlayer", "drawerPoint", "setupError", "btnStart", "btnResume",
-   "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause", "btnVeil", "btnReset",
-   "scoreList", "endTitle", "ranking", "btnAgain", "topics"].forEach(function (id) { el[id] = $(id); });
+  ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
+   "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
+   "btnVeil", "btnReset", "keysHint", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+  ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
   var veiled = false;        // Wort verdeckt
-  var setupNames = ["Spieler 1", "Spieler 2", "Spieler 3"];
+  var setupNames = [null, null, null];   // null = Standardname in der aktuellen Sprache
+  var setupError = null;     // Schlüssel der aktuellen Fehlermeldung
   var resetArmed = null;     // Zeitgeber für zweistufiges "Neu starten"
   var audio = null;
 
@@ -359,18 +451,18 @@
   // ---------- Timer ----------
   function leftMs() {
     if (!state) return 0;
-    var t = state.timer;
-    return t.running ? Math.max(0, t.endsAt - Date.now()) : t.leftMs;
+    var tm = state.timer;
+    return tm.running ? Math.max(0, tm.endsAt - Date.now()) : tm.leftMs;
   }
   function pauseTimer() {
-    var t = state.timer;
-    if (t.running) { t.leftMs = Math.max(0, t.endsAt - Date.now()); t.running = false; }
+    var tm = state.timer;
+    if (tm.running) { tm.leftMs = Math.max(0, tm.endsAt - Date.now()); tm.running = false; }
   }
   function toggleTimer() {
     if (!state || state.finished || state.result || !state.started) return;
-    var t = state.timer;
-    if (t.running) pauseTimer();
-    else { t.endsAt = Date.now() + t.leftMs; t.running = true; }
+    var tm = state.timer;
+    if (tm.running) pauseTimer();
+    else { tm.endsAt = Date.now() + tm.leftMs; tm.running = true; }
     save(); render();
   }
   function tick() {
@@ -418,7 +510,7 @@
       duration: duration,
       drawerPoint: drawerPoint,
       themen: themen,
-      remaining: themen.map(function (t) { return t.woerter.map(function (_, i) { return i; }); }),
+      remaining: themen.map(function (th) { return range(th.w.length); }),
       current: null, round: 0, result: null, finished: false, started: false,
       drawer: randInt(names.length),   // erster Zeichner zufällig
       timer: { running: false, endsAt: 0, leftMs: duration * 1000 }
@@ -435,10 +527,10 @@
       state.current = null; state.finished = true;
       save(); render(); return;
     }
-    var t = open[randInt(open.length)];
-    var pool = state.remaining[t];
-    var w = pool.splice(randInt(pool.length), 1)[0];
-    state.current = { t: t, w: w };
+    var ti = open[randInt(open.length)];
+    var pool = state.remaining[ti];
+    var wi = pool.splice(randInt(pool.length), 1)[0];
+    state.current = { t: ti, w: wi };
     // Nächster Zeichner: wer richtig geraten hat; sonst der nächste in der Reihe
     if (state.round > 0) {
       var r = state.result;
@@ -484,62 +576,71 @@
     save(); render();
   }
 
+  function namesForSetup() { return state.players.map(function (p) { return p.name; }); }
+
   function armReset() {
     if (resetArmed) {
       clearTimeout(resetArmed); resetArmed = null;
-      setupNames = state.players.map(function (p) { return p.name; });
+      setupNames = namesForSetup();
       state = null; clearSaved(); render();
       return;
     }
-    el.btnReset.textContent = "Wirklich abbrechen?";
-    el.btnReset.classList.add("danger");
-    resetArmed = setTimeout(function () {
-      resetArmed = null;
-      el.btnReset.textContent = "Neu starten";
-      el.btnReset.classList.remove("danger");
-    }, 3000);
+    resetArmed = setTimeout(function () { resetArmed = null; render(); }, 3000);
+    render();
+  }
+
+  function setLang(next) {
+    if (LANGS.indexOf(next) < 0 || next === lang) return;
+    lang = next;
+    render();
   }
 
   // ---------- Einrichtung ----------
+  function setupName(i) { return setupNames[i] === null ? t("playerDefault", { n: i + 1 }) : setupNames[i]; }
   function renderSetupPlayers() {
+    var focusedId = document.activeElement && document.activeElement.id;
     el.playerList.innerHTML = "";
-    setupNames.forEach(function (name, i) {
+    setupNames.forEach(function (_, i) {
       var li = document.createElement("li");
       li.innerHTML = '<span class="num">' + (i + 1) + '</span>' +
-        '<input type="text" maxlength="24" id="player-' + i + '" aria-label="Name Spieler ' + (i + 1) + '">' +
-        '<button type="button" aria-label="Spieler ' + (i + 1) + ' entfernen">Entfernen</button>';
+        '<input type="text" maxlength="24" id="player-' + i + '">' +
+        '<button type="button"></button>';
       var input = li.querySelector("input");
-      input.value = name;
+      input.value = setupName(i);
+      input.setAttribute("aria-label", t("playerAria", { n: i + 1 }));
       input.addEventListener("input", function () { setupNames[i] = input.value; });
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") { e.preventDefault(); if (i === setupNames.length - 1) addPlayer(); else focusPlayer(i + 1); }
       });
       var btn = li.querySelector("button");
+      btn.textContent = t("remove");
+      btn.setAttribute("aria-label", t("removeAria", { n: i + 1 }));
       btn.disabled = setupNames.length <= MIN_PLAYERS;
       btn.addEventListener("click", function () { setupNames.splice(i, 1); renderSetupPlayers(); });
       el.playerList.appendChild(li);
     });
     el.btnAddPlayer.disabled = setupNames.length >= MAX_PLAYERS;
+    if (focusedId && /^player-/.test(focusedId) && $(focusedId)) $(focusedId).focus();
   }
   function focusPlayer(i) { var f = $("player-" + i); if (f) { f.focus(); f.select(); } }
   function addPlayer() {
     if (setupNames.length >= MAX_PLAYERS) return;
-    setupNames.push("Spieler " + (setupNames.length + 1));
+    setupNames.push(null);
     renderSetupPlayers();
     focusPlayer(setupNames.length - 1);
   }
   function submitSetup() {
-    var names = setupNames.map(function (n) { return n.trim(); });
-    if (names.some(function (n) { return !n; })) return showError("Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.");
+    var names = setupNames.map(function (_, i) { return setupName(i).trim(); });
+    if (names.some(function (n) { return !n; })) return showError("errEmpty");
     var lower = names.map(function (n) { return n.toLowerCase(); });
-    if (lower.some(function (n, i) { return lower.indexOf(n) !== i; })) return showError("Jeder Name darf nur einmal vorkommen.");
-    if (names.length < MIN_PLAYERS) return showError("Es braucht mindestens 2 Spieler.");
-    el.setupError.hidden = true;
+    if (lower.some(function (n, i) { return lower.indexOf(n) !== i; })) return showError("errDup");
+    if (names.length < MIN_PLAYERS) return showError("errMin");
+    setupError = null;
     var dur = parseInt((document.querySelector('input[name="duration"]:checked') || {}).value || "60", 10);
     unlockAudio();
     startGame(names, dur, el.drawerPoint.checked);
   }
-  function showError(msg) { el.setupError.textContent = msg; el.setupError.hidden = false; }
+  function showError(key) { setupError = key; render(); }
 
   // ---------- Darstellung ----------
   function show(section) {
@@ -548,19 +649,34 @@
     el.end.hidden = section !== "end";
   }
 
+  function renderStatic() {
+    document.documentElement.lang = lang;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (node) {
+      node.textContent = t(node.getAttribute("data-i18n"));
+    });
+    Array.prototype.forEach.call(el.langSwitch.querySelectorAll("button"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
+    });
+    el.langSwitch.setAttribute("aria-label", t("lang"));
+    el.rules.textContent = t("rules", { pool: POOL.length });
+    el.keysHint.innerHTML = t("keys");
+    el.setupError.hidden = !setupError;
+    if (setupError) el.setupError.textContent = t(setupError);
+  }
+
   function renderTopics() {
     el.topics.innerHTML = "";
     el.topics.hidden = !state;
     if (!state) return;
-    state.themen.forEach(function (t, i) {
-      var total = t.woerter.length;
+    state.themen.forEach(function (th, i) {
+      var total = th.w.length;
       var done = total - state.remaining[i].length;
       var chip = document.createElement("div");
       chip.className = "chip" + (done === total ? " done" : "") +
-        (state && state.current && state.current.t === i ? " active" : "");
+        (state.current && state.current.t === i ? " active" : "");
       chip.innerHTML = '<div class="name"></div><div class="bar"><span style="width:' + (done / total * 100) +
         '%"></span></div><div class="count">' + done + " / " + total + "</div>";
-      chip.querySelector(".name").textContent = t.name;
+      chip.querySelector(".name").textContent = topicName(i);
       el.topics.appendChild(chip);
     });
   }
@@ -575,16 +691,18 @@
       li.innerHTML = '<span class="key">' + (i + 1) + '</span>' +
         '<span class="name"></span>' +
         '<span class="pts">' + p.score + '</span>' +
-        '<button type="button" class="guess">Erraten</button>' +
-        '<button type="button" class="minus" aria-label="Einen Punkt abziehen">−</button>';
+        '<button type="button" class="guess"></button>' +
+        '<button type="button" class="minus">−</button>';
       var nameEl = li.querySelector(".name");
       nameEl.textContent = p.name;
-      if (i === d) { var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = "zeichnet"; nameEl.appendChild(tag); }
-      if (isWinner) { var tg = document.createElement("span"); tg.className = "tag"; tg.textContent = "hat erraten"; nameEl.appendChild(tg); }
+      if (i === d) { var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = t("tagDrawing"); nameEl.appendChild(tag); }
+      if (isWinner) { var tg = document.createElement("span"); tg.className = "tag"; tg.textContent = t("tagWinner"); nameEl.appendChild(tg); }
       var g = li.querySelector(".guess");
+      g.textContent = t("guess");
       g.disabled = i === d || !!state.result || !state.started;
       g.addEventListener("click", function () { award(i); });
       var m = li.querySelector(".minus");
+      m.setAttribute("aria-label", t("minusAria"));
       m.disabled = p.score === 0;
       m.addEventListener("click", function () { adjust(i, -1); });
       el.scoreList.appendChild(li);
@@ -605,30 +723,33 @@
     s.className = "status";
     if (r && r.type === "guessed") {
       s.classList.add("ok");
-      s.textContent = state.players[r.by].name + " hat nach " + r.secs + " s erraten";
+      s.textContent = t("stGuessed", { name: state.players[r.by].name, s: r.secs });
     } else if (r && r.type === "timeout") {
       s.classList.add("warn");
-      s.textContent = "Zeit abgelaufen – kein Punkt";
+      s.textContent = t("stTimeout");
     } else if (!state.started) {
       s.classList.add("paused");
-      s.textContent = "Begriff verdeckt. Aufdecken startet den Timer.";
+      s.textContent = t("stVeiled");
     } else if (!state.timer.running) {
       s.classList.add("paused");
-      s.textContent = "Pausiert";
+      s.textContent = t("stPaused");
     } else {
       s.textContent = "";
     }
     el.btnPause.disabled = !!r || !state.started;
-    el.btnPause.textContent = state.timer.running || !state.started ? "Pause" : "Weiter";
+    el.btnPause.textContent = state.timer.running || !state.started ? t("pause") : t("cont");
+    el.btnReset.textContent = resetArmed ? t("resetConfirm") : t("reset");
+    el.btnReset.classList.toggle("danger", !!resetArmed);
   }
 
   function renderEnd() {
     var sorted = state.players.slice().sort(function (a, b) { return b.score - a.score; });
     var best = sorted[0].score;
     var winners = sorted.filter(function (p) { return p.score === best; });
+    el.endEyebrow.textContent = t("endEyebrow", { n: TOTAL });
     el.endTitle.textContent = winners.length > 1
-      ? "Unentschieden: " + winners.map(function (p) { return p.name; }).join(", ")
-      : winners[0].name + " gewinnt";
+      ? t("tie", { names: winners.map(function (p) { return p.name; }).join(", ") })
+      : t("wins", { name: winners[0].name });
     el.ranking.innerHTML = "";
     var place = 0, last = null;
     sorted.forEach(function (p, i) {
@@ -636,37 +757,41 @@
       var li = document.createElement("li");
       if (place === 1) li.className = "first";
       li.innerHTML = '<span class="place">' + place + '.</span><span class="name"></span><span class="pts">' +
-        p.score + (p.score === 1 ? " Punkt" : " Punkte") + "</span>";
+        p.score + " " + (p.score === 1 ? t("point") : t("points")) + "</span>";
       li.querySelector(".name").textContent = p.name;
       el.ranking.appendChild(li);
     });
   }
 
   function render() {
+    renderStatic();
     renderTopics();
     if (!state) {
-      el.meta.textContent = THEMEN_POOL.length + " Themen im Pool";
+      el.meta.textContent = t("metaSetup", { n: POOL.length });
       show("setup");
       renderSetupPlayers();
       return;
     }
     var drawn = TOTAL - state.remaining.reduce(function (s, r) { return s + r.length; }, 0);
-    el.meta.textContent = "Runde " + state.round + " · " + drawn + " / " + TOTAL + " Begriffe";
+    el.meta.textContent = t("metaGame", { r: state.round, d: drawn, t: TOTAL });
     if (state.finished) { show("end"); renderEnd(); return; }
 
     show("game");
-    var t = state.themen[state.current.t];
     el.drawerName.textContent = state.players[drawerIndex()].name;
-    el.topic.textContent = t.name;
-    el.word.textContent = veiled ? "Verdeckt – zum Aufdecken tippen" : t.woerter[state.current.w];
+    el.topic.textContent = topicName(state.current.t);
+    el.word.textContent = veiled ? t("veiled") : wordText(state.current.t, state.current.w);
     el.word.classList.toggle("veiled", veiled);
-    el.btnVeil.textContent = veiled ? "Aufdecken" : "Verdecken";
+    el.btnVeil.textContent = veiled ? t("reveal") : t("hide");
     renderScores();
     renderStatus();
     renderTimer();
   }
 
   // ---------- Ereignisse ----------
+  el.langSwitch.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-lang]");
+    if (b) setLang(b.getAttribute("data-lang"));
+  });
   el.btnAddPlayer.addEventListener("click", addPlayer);
   el.btnStart.addEventListener("click", submitSetup);
   el.btnNext.addEventListener("click", function () { unlockAudio(); nextRound(); });
@@ -675,7 +800,7 @@
   el.word.addEventListener("click", toggleVeil);
   el.btnReset.addEventListener("click", armReset);
   el.btnAgain.addEventListener("click", function () {
-    setupNames = state.players.map(function (p) { return p.name; });
+    setupNames = namesForSetup();
     state = null; clearSaved(); render();
   });
 
@@ -690,11 +815,9 @@
     else if (/^[1-9]$/.test(e.key)) { award(parseInt(e.key, 10) - 1); }
   });
 
-  $("poolCount").textContent = THEMEN_POOL.length;
-
   // ---------- Start ----------
   function boot(data) {
-    if (data && data.state) { state = data.state; veiled = !!data.veiled; }
+    if (data && data.state) { state = data.state; veiled = !!data.veiled; if (data.lang) lang = data.lang; }
     else {
       var saved = loadSaved();
       if (saved && !saved.finished) {
@@ -720,7 +843,7 @@
 
   var hot = window.claude && window.claude.hot;
   if (hot && typeof hot.snapshot === "function") {
-    hot.snapshot(function () { return { state: state, veiled: veiled }; });
+    hot.snapshot(function () { return { state: state, veiled: veiled, lang: lang }; });
   }
   if (hot && typeof hot.ready === "function") hot.ready(boot);
   else boot(hot && hot.data ? hot.data : {});
