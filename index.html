@@ -92,7 +92,7 @@
   .field { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; }
   .field legend { padding: 0; margin-bottom: 10px; font-weight: 600; }
   .players { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .players li { display: grid; grid-template-columns: 2rem 1fr auto; gap: 8px; align-items: center; }
+  .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
   .players .num { font-family: var(--font-mono); color: var(--muted); text-align: center; }
   .players button { padding: 8px 12px; }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; flex-wrap: wrap; }
@@ -183,6 +183,8 @@
   }
   @media (prefers-reduced-motion: reduce) { .word { transition: none; } }
   .top-right { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .sound { padding: 7px 12px; font-size: 0.85rem; font-weight: 600; }
+  .sound[aria-pressed="false"] { color: var(--muted); }
   .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--board); }
   .lang button { border: 0; border-radius: 0; padding: 7px 14px; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; }
   .lang button + button { border-left: 1px solid var(--line); }
@@ -195,6 +197,7 @@
     <h1 class="brand">zrag<span>.</span></h1>
     <div class="top-right">
       <div class="meta" id="meta"></div>
+      <button type="button" class="sound" id="btnSound" aria-pressed="true"></button>
       <div class="lang" id="langSwitch" role="group">
         <button type="button" data-lang="de" lang="de">DE</button>
         <button type="button" data-lang="en" lang="en">EN</button>
@@ -290,7 +293,7 @@
   var I18N = {
     de: {
       tagline: "Zeichnen & Raten", newGame: "Neues Spiel",
-      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer. Wer zuerst richtig rät, bekommt einen Punkt. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart werden 6 von {pool} Themen mit je 10 Wörtern ausgelost.",
+      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart werden 6 von {pool} Themen mit je 10 Wörtern ausgelost.",
       playersLegend: "Spieler (2 bis 9)", addPlayer: "Spieler hinzufügen", remove: "Entfernen",
       playerDefault: "Spieler {n}", playerAria: "Name Spieler {n}", removeAria: "Spieler {n} entfernen",
       timeLegend: "Zeit pro Runde", drawerPoint: "Zeichner erhält ebenfalls 1 Punkt, wenn sein Begriff erraten wird",
@@ -309,11 +312,11 @@
       metaSetup: "{n} Themen im Pool", metaGame: "Runde {r} · {d} / {t} Begriffe",
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
-      lang: "Sprache"
+      lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Jingle", listenAria: "Jingle von Spieler {n} anhören"
     },
     en: {
       tagline: "Draw & Guess", newGame: "New game",
-      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer. Whoever guesses right first gets a point. The first drawer is picked at random; after that, whoever guessed the last word draws next. Each game draws 6 of {pool} topics with 10 words each.",
+      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. Each game draws 6 of {pool} topics with 10 words each.",
       playersLegend: "Players (2 to 9)", addPlayer: "Add player", remove: "Remove",
       playerDefault: "Player {n}", playerAria: "Name of player {n}", removeAria: "Remove player {n}",
       timeLegend: "Time per round", drawerPoint: "The drawer also gets 1 point when their word is guessed",
@@ -332,11 +335,11 @@
       metaSetup: "{n} topics in the pool", metaGame: "Round {r} · {d} / {t} words",
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
-      lang: "Language"
+      lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Jingle", listenAria: "Play jingle of player {n}"
     },
     es: {
       tagline: "Dibuja y adivina", newGame: "Nueva partida",
-      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador. Quien acierta primero gana un punto. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida se sortean 6 de {pool} temas con 10 palabras cada uno.",
+      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida se sortean 6 de {pool} temas con 10 palabras cada uno.",
       playersLegend: "Jugadores (de 2 a 9)", addPlayer: "Añadir jugador", remove: "Quitar",
       playerDefault: "Jugador {n}", playerAria: "Nombre del jugador {n}", removeAria: "Quitar jugador {n}",
       timeLegend: "Tiempo por ronda", drawerPoint: "Quien dibuja también gana 1 punto si aciertan su palabra",
@@ -355,7 +358,7 @@
       metaSetup: "{n} temas disponibles", metaGame: "Ronda {r} · {d} / {t} palabras",
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
-      lang: "Idioma"
+      lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Jingle", listenAria: "Escuchar el jingle del jugador {n}"
     }
   };
 
@@ -427,7 +430,7 @@
   var el = {};
   ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
    "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
-   "btnVeil", "btnReset", "keysHint", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+   "btnVeil", "btnReset", "keysHint", "btnSound", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
   ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
@@ -436,6 +439,8 @@
   var setupError = null;     // Schlüssel der aktuellen Fehlermeldung
   var resetArmed = null;     // Zeitgeber für zweistufiges "Neu starten"
   var audio = null;
+  var soundOn = true;
+  var lastTickSec = null;    // zuletzt abgezählte Sekunde der laufenden Runde
 
   // ---------- Speicher ----------
   function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
@@ -466,6 +471,14 @@
     save(); render();
   }
   function tick() {
+    if (state && !state.finished && state.timer.running) {
+      var secsLeft = Math.ceil(leftMs() / 1000);
+      // Timer rot: jede verbleibende Sekunde mit einem Ton abzählen
+      if (secsLeft > 0 && secsLeft <= LOW_SECONDS && secsLeft !== lastTickSec) {
+        lastTickSec = secsLeft;
+        countTick(secsLeft);
+      }
+    }
     if (state && !state.finished && state.timer.running && leftMs() <= 0) {
       state.timer.running = false;
       state.timer.leftMs = 0;
@@ -476,8 +489,51 @@
     renderTimer();
   }
 
+  // Einzelner Ton: Frequenz in Hz, Start relativ zu jetzt, Dauer in s
+  function tone(freq, start, dur, type, vol) {
+    var t0 = audio.currentTime + start;
+    var o = audio.createOscillator(), g = audio.createGain();
+    o.type = type || "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(audio.destination);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+
+  // Countdown: kurzer Ton pro Sekunde, die letzten 3 höher
+  function countTick(sec) {
+    if (!audio || !soundOn) return;
+    try { tone(sec <= 3 ? 1320 : 990, 0, 0.09, "square", 0.08); } catch (e) {}
+  }
+
+  // Eigener Jingle pro Spielerplatz (1–9): Noten als MIDI-Nummern, Längen in Sekunden
+  var JINGLES = [
+    { type: "triangle", notes: [60, 64, 67, 72],         lens: [0.12, 0.12, 0.12, 0.4] },
+    { type: "square",   notes: [72, 71, 72, 76, 79],     lens: [0.1, 0.1, 0.1, 0.12, 0.4] },
+    { type: "sawtooth", notes: [67, 67, 74, 72],         lens: [0.16, 0.08, 0.2, 0.45] },
+    { type: "triangle", notes: [65, 69, 72, 77, 72, 77], lens: [0.09, 0.09, 0.09, 0.15, 0.09, 0.4] },
+    { type: "sine",     notes: [76, 79, 84, 79, 88],     lens: [0.1, 0.1, 0.18, 0.1, 0.45] },
+    { type: "square",   notes: [62, 66, 69, 74, 69, 74], lens: [0.08, 0.08, 0.08, 0.2, 0.08, 0.4] },
+    { type: "triangle", notes: [70, 74, 77, 82],         lens: [0.2, 0.1, 0.1, 0.45] },
+    { type: "sine",     notes: [64, 67, 71, 76, 74, 76], lens: [0.1, 0.1, 0.1, 0.2, 0.1, 0.45] },
+    { type: "square",   notes: [57, 64, 69, 72, 76],     lens: [0.14, 0.07, 0.07, 0.14, 0.45] }
+  ];
+  function playJingle(i, delay) {
+    var j = JINGLES[i % JINGLES.length], at = delay || 0;
+    if (!audio || !soundOn) return at;
+    try {
+      j.notes.forEach(function (n, k) {
+        tone(midi(n), at, j.lens[k] * 1.1, j.type, j.type === "sine" ? 0.25 : 0.12);
+        at += j.lens[k];
+      });
+    } catch (e) {}
+    return at + 0.25;
+  }
+
   function beep() {
-    if (!audio) return;
+    if (!audio || !soundOn) return;
     try {
       [0, 0.25, 0.5].forEach(function (offset, i) {
         var o = audio.createOscillator(), g = audio.createGain();
@@ -525,7 +581,7 @@
     if (!open.length) {
       pauseTimer();
       state.current = null; state.finished = true;
-      save(); render(); return;
+      save(); render(); playWinnerJingles(); return;
     }
     var ti = open[randInt(open.length)];
     var pool = state.remaining[ti];
@@ -541,6 +597,7 @@
     // Begriff startet verdeckt; der Timer läuft erst nach dem ersten Aufdecken
     state.started = false;
     state.timer = { running: false, endsAt: 0, leftMs: state.duration * 1000 };
+    lastTickSec = null;
     veiled = true;
     save(); render();
   }
@@ -555,6 +612,7 @@
     var secs = Math.max(1, Math.round((state.duration * 1000 - state.timer.leftMs) / 1000));
     state.result = { type: "guessed", by: i, secs: secs };
     save(); render();
+    playJingle(i);
   }
 
   function toggleVeil() {
@@ -574,6 +632,13 @@
     var p = state.players[i];
     p.score = Math.max(0, p.score + delta);
     save(); render();
+  }
+
+  // Spielende: Jingle des Siegers, bei Gleichstand nacheinander alle Sieger
+  function playWinnerJingles() {
+    var best = Math.max.apply(null, state.players.map(function (p) { return p.score; }));
+    var at = 0;
+    state.players.forEach(function (p, i) { if (p.score === best) at = playJingle(i, at); });
   }
 
   function namesForSetup() { return state.players.map(function (p) { return p.name; }); }
@@ -604,7 +669,8 @@
       var li = document.createElement("li");
       li.innerHTML = '<span class="num">' + (i + 1) + '</span>' +
         '<input type="text" maxlength="24" id="player-' + i + '">' +
-        '<button type="button"></button>';
+        '<button type="button" class="listen"></button>' +
+        '<button type="button" class="remove"></button>';
       var input = li.querySelector("input");
       input.value = setupName(i);
       input.setAttribute("aria-label", t("playerAria", { n: i + 1 }));
@@ -612,7 +678,11 @@
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") { e.preventDefault(); if (i === setupNames.length - 1) addPlayer(); else focusPlayer(i + 1); }
       });
-      var btn = li.querySelector("button");
+      var lb = li.querySelector(".listen");
+      lb.textContent = t("listen");
+      lb.setAttribute("aria-label", t("listenAria", { n: i + 1 }));
+      lb.addEventListener("click", function () { unlockAudio(); var was = soundOn; soundOn = true; playJingle(i); soundOn = was; });
+      var btn = li.querySelector(".remove");
       btn.textContent = t("remove");
       btn.setAttribute("aria-label", t("removeAria", { n: i + 1 }));
       btn.disabled = setupNames.length <= MIN_PLAYERS;
@@ -658,6 +728,8 @@
       b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
     });
     el.langSwitch.setAttribute("aria-label", t("lang"));
+    el.btnSound.textContent = soundOn ? t("soundOn") : t("soundOff");
+    el.btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
     el.rules.textContent = t("rules", { pool: POOL.length });
     el.keysHint.innerHTML = t("keys");
     el.setupError.hidden = !setupError;
@@ -792,6 +864,7 @@
     var b = e.target.closest("button[data-lang]");
     if (b) setLang(b.getAttribute("data-lang"));
   });
+  el.btnSound.addEventListener("click", function () { soundOn = !soundOn; if (soundOn) unlockAudio(); render(); });
   el.btnAddPlayer.addEventListener("click", addPlayer);
   el.btnStart.addEventListener("click", submitSetup);
   el.btnNext.addEventListener("click", function () { unlockAudio(); nextRound(); });

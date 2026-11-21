@@ -30,7 +30,9 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - 2 bis 9 Spieler. Der erste Zeichner wird zufällig ausgelost. Danach zeichnet, wer die Runde zuvor richtig geraten hat. Errät niemand den Begriff (Zeit abgelaufen oder Runde übersprungen), ist der nächste Spieler in der Reihe dran. Der Zeichner kann in seiner Runde keinen Punkt erhalten.
 - Wer zuerst richtig rät, bekommt 1 Punkt. Optional bekommt auch der Zeichner 1 Punkt, wenn sein Begriff erraten wird.
 - Jeder Begriff erscheint verdeckt. Der Zeichner deckt ihn am Board auf (Tippen auf das Feld, Button oder `V`); erst dann startet der Timer und Punkte können vergeben werden.
-- Timer pro Runde: 30, 60, 90 oder 120 Sekunden. Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.
+- Timer pro Runde: 30, 60, 90 oder 120 Sekunden. In den letzten 10 Sekunden wird der Timer rot und jede Sekunde mit einem Ton abgezählt (die letzten 3 höher). Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.
+- Jeder Spielerplatz (1–9) hat einen eigenen Jingle. Er erklingt, wenn der Spieler eine Runde gewinnt, und am Spielende für den Sieger (bei Gleichstand für alle Sieger nacheinander). In der Einrichtung lässt sich jeder Jingle mit „Jingle“ anhören.
+- Der Knopf „Ton an/aus“ oben rechts schaltet alle Töne stumm.
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
