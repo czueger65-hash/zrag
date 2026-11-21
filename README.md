@@ -10,7 +10,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 |-------|----------|
 | `Enter` | Nächste Runde (Thema + Wort, Timer startet) |
 | `Leertaste` | Timer pausieren/fortsetzen |
-| `V` | Wort verdecken/zeigen |
+| `V` | Begriff aufdecken/verdecken (erstes Aufdecken startet den Timer) |
 | `1`–`9` | Punkt an Spieler 1–9 vergeben (beendet die Runde) |
 
 ## Spiellogik
@@ -20,6 +20,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
 - 2 bis 9 Spieler. Der Zeichner wechselt jede Runde der Reihe nach und kann in seiner Runde keinen Punkt erhalten.
 - Wer zuerst richtig rät, bekommt 1 Punkt. Optional bekommt auch der Zeichner 1 Punkt, wenn sein Begriff erraten wird.
+- Jeder Begriff erscheint verdeckt. Der Zeichner deckt ihn am Board auf (Tippen auf das Feld, Button oder `V`); erst dann startet der Timer und Punkte können vergeben werden.
 - Timer pro Runde: 30, 60, 90 oder 120 Sekunden. Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.

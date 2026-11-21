@@ -116,7 +116,12 @@
     font-family: var(--font-display); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em;
     font-size: clamp(2.4rem, 8vw, 5.2rem); overflow-wrap: anywhere; transition: filter 0.2s;
   }
-  .word.veiled { filter: blur(24px); user-select: none; }
+  .word { cursor: pointer; border-radius: 12px; }
+  .word.veiled {
+    color: var(--muted); font-weight: 600; letter-spacing: 0; user-select: none;
+    font-size: clamp(1.3rem, 4vw, 2rem); line-height: 1.3;
+    border: 2px dashed var(--line); padding: 30px 16px; background: var(--paper);
+  }
 
   .timer { display: grid; gap: 8px; max-width: 520px; width: 100%; justify-self: center; }
   .time { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -194,6 +199,7 @@
     </div>
     <p class="rules">
       Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten.
+      Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer.
       Wer zuerst richtig rät, bekommt einen Punkt. Die Rolle des Zeichners wechselt jede Runde.
       6 Themen mit je 10 Wörtern.
     </p>
@@ -245,7 +251,7 @@
         <button type="button" id="btnReset">Neu starten</button>
       </div>
       <p class="keys">
-        <kbd>Enter</kbd> nächste Runde · <kbd>Leertaste</kbd> Pause · <kbd>V</kbd> verdecken · <kbd>1</kbd>–<kbd>9</kbd> Punkt vergeben
+        <kbd>Enter</kbd> nächste Runde · <kbd>Leertaste</kbd> Pause · <kbd>V</kbd> aufdecken/verdecken · <kbd>1</kbd>–<kbd>9</kbd> Punkt vergeben
       </p>
     </div>
     <aside class="panel scores">
@@ -284,7 +290,7 @@
     { name: "Haushalt",        woerter: ["Staubsauger", "Toaster", "Bügeleisen", "Kühlschrank", "Wecker", "Regenschirm", "Schere", "Glühbirne", "Waschmaschine", "Besen"] }
   ];
   var TOTAL = THEMEN.reduce(function (s, t) { return s + t.woerter.length; }, 0);
-  var STORAGE_KEY = "zrag-state-v2";
+  var STORAGE_KEY = "zrag-state-v3";
   var MAX_PLAYERS = 9, MIN_PLAYERS = 2, LOW_SECONDS = 10;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -321,7 +327,7 @@
     if (t.running) { t.leftMs = Math.max(0, t.endsAt - Date.now()); t.running = false; }
   }
   function toggleTimer() {
-    if (!state || state.finished || state.result) return;
+    if (!state || state.finished || state.result || !state.started) return;
     var t = state.timer;
     if (t.running) pauseTimer();
     else { t.endsAt = Date.now() + t.leftMs; t.running = true; }
@@ -369,7 +375,7 @@
       duration: duration,
       drawerPoint: drawerPoint,
       remaining: THEMEN.map(function (t) { return t.woerter.map(function (_, i) { return i; }); }),
-      current: null, round: 0, result: null, finished: false,
+      current: null, round: 0, result: null, finished: false, started: false,
       timer: { running: false, endsAt: 0, leftMs: duration * 1000 }
     };
     nextRound();
@@ -390,13 +396,15 @@
     state.current = { t: t, w: w };
     state.round += 1;
     state.result = null;
-    state.timer = { running: true, endsAt: Date.now() + state.duration * 1000, leftMs: state.duration * 1000 };
-    veiled = false;
+    // Begriff startet verdeckt; der Timer läuft erst nach dem ersten Aufdecken
+    state.started = false;
+    state.timer = { running: false, endsAt: 0, leftMs: state.duration * 1000 };
+    veiled = true;
     save(); render();
   }
 
   function award(i) {
-    if (!state || state.finished || state.result || i >= state.players.length) return;
+    if (!state || state.finished || state.result || !state.started || i >= state.players.length) return;
     var d = drawerIndex();
     if (i === d) return;
     pauseTimer();
@@ -405,6 +413,19 @@
     var secs = Math.max(1, Math.round((state.duration * 1000 - state.timer.leftMs) / 1000));
     state.result = { type: "guessed", by: i, secs: secs };
     save(); render();
+  }
+
+  function toggleVeil() {
+    if (!state || state.finished) return;
+    veiled = !veiled;
+    if (!veiled && !state.started) {
+      state.started = true;
+      state.timer.running = true;
+      state.timer.endsAt = Date.now() + state.timer.leftMs;
+      unlockAudio();
+      save();
+    }
+    render();
   }
 
   function adjust(i, delta) {
@@ -509,7 +530,7 @@
       if (i === d) { var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = "zeichnet"; nameEl.appendChild(tag); }
       if (isWinner) { var tg = document.createElement("span"); tg.className = "tag"; tg.textContent = "hat erraten"; nameEl.appendChild(tg); }
       var g = li.querySelector(".guess");
-      g.disabled = i === d || !!state.result;
+      g.disabled = i === d || !!state.result || !state.started;
       g.addEventListener("click", function () { award(i); });
       var m = li.querySelector(".minus");
       m.disabled = p.score === 0;
@@ -536,14 +557,17 @@
     } else if (r && r.type === "timeout") {
       s.classList.add("warn");
       s.textContent = "Zeit abgelaufen – kein Punkt";
+    } else if (!state.started) {
+      s.classList.add("paused");
+      s.textContent = "Begriff verdeckt. Aufdecken startet den Timer.";
     } else if (!state.timer.running) {
       s.classList.add("paused");
       s.textContent = "Pausiert";
     } else {
       s.textContent = "";
     }
-    el.btnPause.disabled = !!r;
-    el.btnPause.textContent = state.timer.running ? "Pause" : "Weiter";
+    el.btnPause.disabled = !!r || !state.started;
+    el.btnPause.textContent = state.timer.running || !state.started ? "Pause" : "Weiter";
   }
 
   function renderEnd() {
@@ -582,9 +606,9 @@
     var t = THEMEN[state.current.t];
     el.drawerName.textContent = state.players[drawerIndex()].name;
     el.topic.textContent = t.name;
-    el.word.textContent = t.woerter[state.current.w];
+    el.word.textContent = veiled ? "Verdeckt – zum Aufdecken tippen" : t.woerter[state.current.w];
     el.word.classList.toggle("veiled", veiled);
-    el.btnVeil.textContent = veiled ? "Zeigen" : "Verdecken";
+    el.btnVeil.textContent = veiled ? "Aufdecken" : "Verdecken";
     renderScores();
     renderStatus();
     renderTimer();
@@ -595,7 +619,8 @@
   el.btnStart.addEventListener("click", submitSetup);
   el.btnNext.addEventListener("click", function () { unlockAudio(); nextRound(); });
   el.btnPause.addEventListener("click", toggleTimer);
-  el.btnVeil.addEventListener("click", function () { veiled = !veiled; render(); });
+  el.btnVeil.addEventListener("click", toggleVeil);
+  el.word.addEventListener("click", toggleVeil);
   el.btnReset.addEventListener("click", armReset);
   el.btnAgain.addEventListener("click", function () {
     setupNames = state.players.map(function (p) { return p.name; });
@@ -609,7 +634,7 @@
     if (!state || state.finished) return;
     if (e.key === "Enter") { e.preventDefault(); unlockAudio(); nextRound(); }
     else if (e.key === " ") { e.preventDefault(); toggleTimer(); }
-    else if (e.key === "v" || e.key === "V") { veiled = !veiled; render(); }
+    else if (e.key === "v" || e.key === "V") { toggleVeil(); }
     else if (/^[1-9]$/.test(e.key)) { award(parseInt(e.key, 10) - 1); }
   });
 
@@ -623,7 +648,7 @@
         setupNames = saved.players.map(function (p) { return p.name; });
         el.btnResume.addEventListener("click", function () {
           pauseTimerOf(saved);
-          state = saved; unlockAudio(); render();
+          state = saved; veiled = true; unlockAudio(); render();
         });
       }
     }
