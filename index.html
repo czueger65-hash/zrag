@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zrag</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --border: #e2e0da;
+    --accent: #2f5bea;
+    --accent-text: #ffffff;
+    --done: #2e8b57;
+    --chip-bg: #efede7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416;
+      --surface: #1e1e21;
+      --text: #f2f2f4;
+      --muted: #a0a0a8;
+      --border: #2e2e33;
+      --accent: #6d8dff;
+      --accent-text: #0d0d10;
+      --done: #5cc98a;
+      --chip-bg: #26262a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416;
+    --surface: #1e1e21;
+    --text: #f2f2f4;
+    --muted: #a0a0a8;
+    --border: #2e2e33;
+    --accent: #6d8dff;
+    --accent-text: #0d0d10;
+    --done: #5cc98a;
+    --chip-bg: #26262a;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 0.04em; }
+  header .counter { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 760px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 24px;
+    display: grid;
+    gap: 28px;
+  }
+  .label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .topic { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 600; }
+  .word {
+    font-size: clamp(2.6rem, 11vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+  .hidden-word {
+    filter: blur(22px);
+    user-select: none;
+  }
+  .hint { color: var(--muted); font-size: 1rem; margin: 0; }
+
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  button {
+    font: inherit;
+    border-radius: 10px;
+    padding: 12px 22px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  button.primary {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  kbd {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8em;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 6px;
+    background: var(--chip-bg);
+  }
+
+  .topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    width: 100%;
+    max-width: 760px;
+  }
+  .chip {
+    background: var(--chip-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: left;
+    border: 2px solid transparent;
+  }
+  .chip.active { border-color: var(--accent); }
+  .chip.done { color: var(--muted); text-decoration: line-through; }
+  .chip .name { font-weight: 600; font-size: 0.95rem; }
+  .chip .bar {
+    margin-top: 8px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .chip .bar span { display: block; height: 100%; background: var(--accent); }
+  .chip.done .bar span { background: var(--done); }
+  .chip .count { font-size: 0.8rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  .rules { max-width: 620px; color: var(--muted); line-height: 1.55; margin: 0; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 480px) {
+    header { padding: 14px 16px; }
+    .card { padding: 28px 16px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>zrag</h1>
+  <span class="counter" id="counter"></span>
+</header>
+
+<main>
+  <!-- Startbildschirm -->
+  <section id="start" class="card">
+    <div>
+      <div class="topic">Zeichnen &amp; Raten</div>
+    </div>
+    <p class="rules">
+      Eine Person steht am Whiteboard und zeichnet den angezeigten Begriff.
+      Die anderen raten – wer zuerst richtig liegt, gewinnt die Runde.
+      Mit jeder <kbd>Enter</kbd>-Taste erscheinen ein Thema und ein passendes Wort.
+      6 Themen mit je 10 Wörtern; nach 10 Wörtern ist ein Thema erledigt.
+    </p>
+    <div class="actions">
+      <button class="primary" id="btnStart">Spiel starten <kbd>Enter</kbd></button>
+      <button id="btnResume" hidden>Spiel fortsetzen</button>
+    </div>
+  </section>
+
+  <!-- Spielbildschirm -->
+  <section id="game" class="card" hidden>
+    <div>
+      <div class="label">Thema</div>
+      <div class="topic" id="topic">–</div>
+    </div>
+    <div>
+      <div class="label">Wort</div>
+      <div class="word" id="word">–</div>
+    </div>
+    <p class="hint">
+      <kbd>Enter</kbd> nächster Begriff · <kbd>V</kbd> Wort verdecken/zeigen
+    </p>
+    <div class="actions">
+      <button class="primary" id="btnNext">Nächster Begriff</button>
+      <button id="btnHide">Verdecken</button>
+      <button id="btnReset">Neu starten</button>
+    </div>
+  </section>
+
+  <!-- Endbildschirm -->
+  <section id="end" class="card" hidden>
+    <div class="topic">Alle Themen erledigt</div>
+    <p class="rules">Alle 60 Begriffe wurden gezeichnet.</p>
+    <div class="actions">
+      <button class="primary" id="btnRestart">Neues Spiel <kbd>Enter</kbd></button>
+    </div>
+  </section>
+
+  <div class="topics" id="topics"></div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // 6 Startthemen mit je 10 zeichenbaren Begriffen
+  var THEMEN = [
+    { name: "Tiere",          woerter: ["Elefant", "Giraffe", "Pinguin", "Schlange", "Schnecke", "Krokodil", "Eule", "Hai", "Igel", "Schmetterling"] },
+    { name: "Berufe",         woerter: ["Feuerwehrmann", "Koch", "Arzt", "Pilot", "Maler", "Polizist", "Zahnarzt", "Gärtner", "Friseur", "Astronaut"] },
+    { name: "Sport",          woerter: ["Fussball", "Tennis", "Skifahren", "Schwimmen", "Boxen", "Golf", "Basketball", "Radfahren", "Bogenschiessen", "Surfen"] },
+    { name: "Essen & Trinken", woerter: ["Pizza", "Banane", "Spiegelei", "Hamburger", "Eiscreme", "Brezel", "Kaffee", "Spaghetti", "Ananas", "Geburtstagskuchen"] },
+    { name: "Verkehrsmittel", woerter: ["Fahrrad", "Helikopter", "Segelboot", "Zug", "Rakete", "Traktor", "Heissluftballon", "U-Boot", "Motorrad", "Seilbahn"] },
+    { name: "Haushalt",       woerter: ["Staubsauger", "Toaster", "Bügeleisen", "Kühlschrank", "Wecker", "Regenschirm", "Schere", "Glühbirne", "Waschmaschine", "Besen"] }
+  ];
+  var TOTAL = THEMEN.reduce(function (s, t) { return s + t.woerter.length; }, 0);
+  var STORAGE_KEY = "zrag-state-v1";
+
+  // Zustand: pro Thema die noch nicht gezogenen Wort-Indizes
+  var state = null;
+  var hidden = false;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var el = {
+    start: $("start"), game: $("game"), end: $("end"),
+    topic: $("topic"), word: $("word"), topics: $("topics"), counter: $("counter"),
+    btnStart: $("btnStart"), btnResume: $("btnResume"), btnNext: $("btnNext"),
+    btnHide: $("btnHide"), btnReset: $("btnReset"), btnRestart: $("btnRestart")
+  };
+
+  function freshState() {
+    return {
+      remaining: THEMEN.map(function (t) { return t.woerter.map(function (_, i) { return i; }); }),
+      current: null,   // { t: themaIndex, w: wortIndex }
+      drawn: 0
+    };
+  }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var s = JSON.parse(raw);
+      if (!s || !Array.isArray(s.remaining) || s.remaining.length !== THEMEN.length) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+  function clearSaved() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  function randInt(n) { return Math.floor(Math.random() * n); }
+
+  // Zufälliges offenes Thema, daraus ein zufälliges noch nicht gezogenes Wort
+  function next() {
+    var open = [];
+    state.remaining.forEach(function (r, i) { if (r.length) open.push(i); });
+    if (!open.length) { state.current = null; save(); render(); return; }
+    var t = open[randInt(open.length)];
+    var pool = state.remaining[t];
+    var w = pool.splice(randInt(pool.length), 1)[0];
+    state.current = { t: t, w: w };
+    state.drawn += 1;
+    save();
+    render();
+  }
+
+  function show(section) {
+    el.start.hidden = section !== "start";
+    el.game.hidden = section !== "game";
+    el.end.hidden = section !== "end";
+  }
+
+  function renderTopics() {
+    el.topics.innerHTML = "";
+    THEMEN.forEach(function (t, i) {
+      var total = t.woerter.length;
+      var done = total - (state ? state.remaining[i].length : total);
+      var chip = document.createElement("div");
+      chip.className = "chip" +
+        (done === total ? " done" : "") +
+        (state && state.current && state.current.t === i ? " active" : "");
+      chip.innerHTML =
+        '<div class="name"></div>' +
+        '<div class="bar"><span style="width:' + (done / total * 100) + '%"></span></div>' +
+        '<div class="count">' + done + " / " + total + "</div>";
+      chip.querySelector(".name").textContent = t.name;
+      el.topics.appendChild(chip);
+    });
+  }
+
+  function render() {
+    renderTopics();
+    var drawn = state ? state.drawn : 0;
+    el.counter.textContent = drawn + " / " + TOTAL;
+
+    if (!state || (!state.current && state.drawn === 0)) { show("start"); return; }
+    if (!state.current) { show("end"); return; }
+
+    show("game");
+    var t = THEMEN[state.current.t];
+    el.topic.textContent = t.name;
+    el.word.textContent = t.woerter[state.current.w];
+    el.word.classList.toggle("hidden-word", hidden);
+    el.btnHide.textContent = hidden ? "Zeigen" : "Verdecken";
+  }
+
+  function startNew() {
+    state = freshState();
+    hidden = false;
+    next();
+  }
+
+  function toggleHide() {
+    if (el.game.hidden) return;
+    hidden = !hidden;
+    render();
+  }
+
+  function reset() {
+    if (!confirm("Spiel wirklich neu starten? Der Fortschritt geht verloren.")) return;
+    clearSaved();
+    startNew();
+  }
+
+  el.btnStart.addEventListener("click", startNew);
+  el.btnResume.addEventListener("click", function () { state = saved; render(); });
+  el.btnNext.addEventListener("click", next);
+  el.btnHide.addEventListener("click", toggleHide);
+  el.btnReset.addEventListener("click", reset);
+  el.btnRestart.addEventListener("click", startNew);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (!el.game.hidden) next();
+      else if (!el.end.hidden) startNew();
+      else if (!el.start.hidden) startNew();
+    } else if (e.key === "v" || e.key === "V") {
+      toggleHide();
+    }
+  });
+
+  // Gespeicherten Spielstand anbieten
+  var saved = load();
+  if (saved && saved.current) el.btnResume.hidden = false;
+  state = null;
+  render();
+})();
+</script>
+</body>
+</html>
