@@ -15,7 +15,9 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 ## Spiellogik
 
-- 6 Startthemen mit je 10 Wörtern (60 Begriffe).
+- Bei jedem Spielstart werden 6 Themen aus einem Pool von 17 Themen ausgelost und aus jedem Thema 10 Wörter (60 Begriffe pro Spiel).
+- Pool-Themen: Tiere, Berufe, Sport, Essen & Trinken, Verkehrsmittel, Haushalt, Natur & Wetter, Musikinstrumente, Kleidung, Märchen & Fantasie, Schule & Büro, Am Strand, Werkzeuge, Körper, Freizeit & Spiele, Gebäude, Feste & Feiertage.
+- Aufnahmekriterium für Wörter: konkret und in unter einer Minute erkennbar zeichenbar. Jedes Wort kommt im Pool nur einmal vor.
 - Jeder Vorschlag zieht ein zufälliges offenes Thema und daraus ein noch nicht gezeigtes Wort. Kein Begriff kommt doppelt.
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
 - 2 bis 9 Spieler. Der erste Zeichner wird zufällig ausgelost. Danach zeichnet, wer die Runde zuvor richtig geraten hat. Errät niemand den Begriff (Zeit abgelaufen oder Runde übersprungen), ist der nächste Spieler in der Reihe dran. Der Zeichner kann in seiner Runde keinen Punkt erhalten.
@@ -25,4 +27,4 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
-Themen und Wörter stehen in `index.html` im Array `THEMEN`.
+Themen und Wörter stehen in `index.html` im Array `THEMEN_POOL`. Ein Thema braucht mindestens 10 Wörter.
