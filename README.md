@@ -18,7 +18,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - 6 Startthemen mit je 10 Wörtern (60 Begriffe).
 - Jeder Vorschlag zieht ein zufälliges offenes Thema und daraus ein noch nicht gezeigtes Wort. Kein Begriff kommt doppelt.
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
-- 2 bis 9 Spieler. Der Zeichner wechselt jede Runde der Reihe nach und kann in seiner Runde keinen Punkt erhalten.
+- 2 bis 9 Spieler. Der erste Zeichner wird zufällig ausgelost. Danach zeichnet, wer die Runde zuvor richtig geraten hat. Errät niemand den Begriff (Zeit abgelaufen oder Runde übersprungen), ist der nächste Spieler in der Reihe dran. Der Zeichner kann in seiner Runde keinen Punkt erhalten.
 - Wer zuerst richtig rät, bekommt 1 Punkt. Optional bekommt auch der Zeichner 1 Punkt, wenn sein Begriff erraten wird.
 - Jeder Begriff erscheint verdeckt. Der Zeichner deckt ihn am Board auf (Tippen auf das Feld, Button oder `V`); erst dann startet der Timer und Punkte können vergeben werden.
 - Timer pro Runde: 30, 60, 90 oder 120 Sekunden. Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.

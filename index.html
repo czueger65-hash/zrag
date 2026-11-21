@@ -200,7 +200,7 @@
     <p class="rules">
       Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten.
       Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer.
-      Wer zuerst richtig rät, bekommt einen Punkt. Die Rolle des Zeichners wechselt jede Runde.
+      Wer zuerst richtig rät, bekommt einen Punkt. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat.
       6 Themen mit je 10 Wörtern.
     </p>
     <fieldset class="field">
@@ -290,7 +290,7 @@
     { name: "Haushalt",        woerter: ["Staubsauger", "Toaster", "Bügeleisen", "Kühlschrank", "Wecker", "Regenschirm", "Schere", "Glühbirne", "Waschmaschine", "Besen"] }
   ];
   var TOTAL = THEMEN.reduce(function (s, t) { return s + t.woerter.length; }, 0);
-  var STORAGE_KEY = "zrag-state-v3";
+  var STORAGE_KEY = "zrag-state-v4";
   var MAX_PLAYERS = 9, MIN_PLAYERS = 2, LOW_SECONDS = 10;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -366,7 +366,9 @@
   }
 
   // ---------- Spiellogik ----------
-  function drawerIndex() { return (state.round - 1) % state.players.length; }
+  function drawerIndex() {
+    return typeof state.drawer === "number" ? state.drawer : (state.round - 1) % state.players.length;
+  }
   function randInt(n) { return Math.floor(Math.random() * n); }
 
   function startGame(names, duration, drawerPoint) {
@@ -376,6 +378,7 @@
       drawerPoint: drawerPoint,
       remaining: THEMEN.map(function (t) { return t.woerter.map(function (_, i) { return i; }); }),
       current: null, round: 0, result: null, finished: false, started: false,
+      drawer: randInt(names.length),   // erster Zeichner zufällig
       timer: { running: false, endsAt: 0, leftMs: duration * 1000 }
     };
     nextRound();
@@ -394,6 +397,11 @@
     var pool = state.remaining[t];
     var w = pool.splice(randInt(pool.length), 1)[0];
     state.current = { t: t, w: w };
+    // Nächster Zeichner: wer richtig geraten hat; sonst der nächste in der Reihe
+    if (state.round > 0) {
+      var r = state.result;
+      state.drawer = r && r.type === "guessed" ? r.by : (drawerIndex() + 1) % state.players.length;
+    }
     state.round += 1;
     state.result = null;
     // Begriff startet verdeckt; der Timer läuft erst nach dem ersten Aufdecken
