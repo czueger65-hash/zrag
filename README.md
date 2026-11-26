@@ -22,9 +22,11 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 ## Spiellogik
 
-- Bei jedem Spielstart werden 6 Themen aus einem Pool von 30 Themen mit je 30 Wörtern (900 Begriffe) ausgelost und aus jedem Thema 10 Wörter (60 Begriffe pro Spiel).
-- Pool-Themen: Haustiere & Bauernhof, Wildtiere, Meerestiere, Vögel & Insekten, Berufe, Sport, Obst & Gemüse, Essen & Trinken, Verkehrsmittel, Küche, Wohnen & Haushalt, Natur & Wetter, Musik, Kleidung & Accessoires, Märchen & Fantasie, Schule & Büro, Strand & Ferien, Werkzeuge & Garten, Körper & Gesundheit, Spielzeug & Spielplatz, Gebäude & Bauwerke, Feste & Feiertage, Technik & Elektronik, Weltraum & Wissenschaft, Winter & Berge, Stadt & Strasse, Zirkus & Jahrmarkt, Tätigkeiten, Geschichte & Abenteuer, Hobbys & Freizeit.
-- Aufnahmekriterium für Wörter: konkret, in unter einer Minute erkennbar zeichenbar und in allen drei Sprachen eindeutig übersetzbar. Keine regionalen Begriffe. Jedes Wort kommt im Pool nur einmal vor.
+- Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen (höchstens 60 Begriffe pro Spiel), jeweils auf Deutsch, Englisch und Spanisch.
+- Vorgaben an Claude: konkret und in unter einer Minute erkennbar zeichenbar, in allen drei Sprachen eindeutig übersetzbar, keine regionalen Begriffe, keine Marken, kein Wort doppelt. Die Themen der letzten Spiele (im Browser gemerkt) werden ausgeschlossen, damit sich nichts wiederholt.
+- Die Antwort wird geprüft: unvollständige Einträge und doppelte Wörter werden verworfen, mehr als 6 Themen oder 10 Wörter werden abgeschnitten.
+- Dafür braucht die Seite die Artifact-Funktion „Claude fragen“ (`sample`). Beim ersten Spielstart fragt claude.ai, ob die Seite Claude nutzen darf; die Anfragen laufen über das Claude-Konto der Person, die die Seite geöffnet hat.
+- Ist Claude nicht erreichbar (z. B. `index.html` lokal geöffnet) oder schlägt die Erstellung fehl, kann man es erneut versuchen oder bewusst mit der eingebauten Ersatzliste (30 Themen à 30 Wörter) spielen. Die Seite zeigt im Spiel an, woher die Begriffe stammen.
 - Jeder Vorschlag zieht ein zufälliges offenes Thema und daraus ein noch nicht gezeigtes Wort. Kein Begriff kommt doppelt.
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
 - 2 bis 9 Spieler. Der erste Zeichner wird zufällig ausgelost. Danach zeichnet, wer die Runde zuvor richtig geraten hat. Errät niemand den Begriff (Zeit abgelaufen oder Runde übersprungen), ist der nächste Spieler in der Reihe dran. Der Zeichner kann in seiner Runde keinen Punkt erhalten.
@@ -36,4 +38,4 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
-Themen und Wörter stehen in `index.html` im Array `POOL`, jeweils als `[Deutsch, Englisch, Spanisch]`. Ein Thema braucht mindestens 10 Wörter. Die Texte der Oberfläche stehen im Objekt `I18N`.
+Die Anweisung an Claude steht in `index.html` in der Funktion `buildPrompt`. Die Ersatzliste steht im Array `POOL`, jeweils als `[Deutsch, Englisch, Spanisch]`. Die Texte der Oberfläche stehen im Objekt `I18N`.

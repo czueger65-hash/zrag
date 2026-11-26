@@ -182,6 +182,12 @@
     .brand { font-size: 1.6rem; }
   }
   @media (prefers-reduced-motion: reduce) { .word { transition: none; } }
+  .gen { display: grid; gap: 12px; padding: 14px 16px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); }
+  .gen-msg { display: flex; gap: 10px; align-items: center; font-weight: 500; }
+  .spinner { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--marker); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+  .source { margin: 0; color: var(--muted); font-size: 0.82rem; }
   .top-right { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   .sound { padding: 7px 12px; font-size: 0.85rem; font-weight: 600; }
   .sound[aria-pressed="false"] { color: var(--muted); }
@@ -231,6 +237,14 @@
     </fieldset>
     <label class="check"><input type="checkbox" id="drawerPoint"> <span data-i18n="drawerPoint"></span></label>
     <p class="error" id="setupError" hidden></p>
+    <div class="gen" id="genBox" hidden>
+      <p class="gen-msg"><span class="spinner" id="genSpinner" aria-hidden="true"></span><span id="genMsg"></span></p>
+      <div class="row">
+        <button type="button" class="primary" id="btnRetry"></button>
+        <button type="button" id="btnFallback"></button>
+        <button type="button" id="btnCancel"></button>
+      </div>
+    </div>
     <div class="row">
       <button type="button" class="primary" id="btnStart" data-i18n="start"></button>
       <button type="button" id="btnResume" data-i18n="resume" hidden></button>
@@ -282,6 +296,7 @@
   </section>
 
   <div class="topics" id="topics"></div>
+  <p class="source" id="sourceNote" hidden></p>
 </div>
 
 <script>
@@ -293,7 +308,7 @@
   var I18N = {
     de: {
       tagline: "Zeichnen & Raten", newGame: "Neues Spiel",
-      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart werden 6 von {pool} Themen mit je 10 Wörtern ausgelost.",
+      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen.",
       playersLegend: "Spieler (2 bis 9)", addPlayer: "Spieler hinzufügen", remove: "Entfernen",
       playerDefault: "Spieler {n}", playerAria: "Name Spieler {n}", removeAria: "Spieler {n} entfernen",
       timeLegend: "Zeit pro Runde", drawerPoint: "Zeichner erhält ebenfalls 1 Punkt, wenn sein Begriff erraten wird",
@@ -309,14 +324,22 @@
       stVeiled: "Begriff verdeckt. Aufdecken startet den Timer.", stPaused: "Pausiert",
       endEyebrow: "Alle {n} Begriffe gezeichnet", tie: "Unentschieden: {names}", wins: "{name} gewinnt",
       point: "Punkt", points: "Punkte",
-      metaSetup: "{n} Themen im Pool", metaGame: "Runde {r} · {d} / {t} Begriffe",
+      metaSetup: "Themen werden bei jedem Start neu erstellt",
+      loading: "Claude stellt 6 Themen mit je 10 Begriffen zusammen …", cancel: "Abbrechen",
+      retry: "Erneut versuchen", useFallback: "Mit Ersatzliste spielen",
+      errUnavailable: "Neue Begriffe können hier nicht erstellt werden, weil Claude in dieser Ansicht nicht erreichbar ist (z. B. lokal geöffnete Datei).",
+      errNotGranted: "Der Zugriff auf Claude wurde nicht erlaubt. Ohne ihn können keine neuen Begriffe erstellt werden.",
+      errRate: "Gerade zu viele Anfragen an Claude. Bitte in einer Minute erneut versuchen.",
+      errGenerate: "Die Begriffe konnten nicht erstellt werden.",
+      srcClaude: "Themen und Begriffe für dieses Spiel neu von Claude erstellt.",
+      srcFallback: "Ersatzliste: Für dieses Spiel konnten keine neuen Begriffe erstellt werden.", metaGame: "Runde {r} · {d} / {t} Begriffe",
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
       lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Jingle", listenAria: "Jingle von Spieler {n} anhören"
     },
     en: {
       tagline: "Draw & Guess", newGame: "New game",
-      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. Each game draws 6 of {pool} topics with 10 words each.",
+      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. For every game, Claude puts together 6 new topics with 10 words each.",
       playersLegend: "Players (2 to 9)", addPlayer: "Add player", remove: "Remove",
       playerDefault: "Player {n}", playerAria: "Name of player {n}", removeAria: "Remove player {n}",
       timeLegend: "Time per round", drawerPoint: "The drawer also gets 1 point when their word is guessed",
@@ -332,14 +355,22 @@
       stVeiled: "Word hidden. Revealing it starts the timer.", stPaused: "Paused",
       endEyebrow: "All {n} words drawn", tie: "Tie: {names}", wins: "{name} wins",
       point: "point", points: "points",
-      metaSetup: "{n} topics in the pool", metaGame: "Round {r} · {d} / {t} words",
+      metaSetup: "Topics are created fresh for every game",
+      loading: "Claude is putting together 6 topics with 10 words each …", cancel: "Cancel",
+      retry: "Try again", useFallback: "Play with backup list",
+      errUnavailable: "New words can't be created here because Claude isn't reachable in this view (for example, a file opened locally).",
+      errNotGranted: "Access to Claude was not allowed. Without it, no new words can be created.",
+      errRate: "Too many requests to Claude right now. Please try again in a minute.",
+      errGenerate: "The words couldn't be created.",
+      srcClaude: "Topics and words for this game were freshly created by Claude.",
+      srcFallback: "Backup list: no new words could be created for this game.", metaGame: "Round {r} · {d} / {t} words",
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
       lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Jingle", listenAria: "Play jingle of player {n}"
     },
     es: {
       tagline: "Dibuja y adivina", newGame: "Nueva partida",
-      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida se sortean 6 de {pool} temas con 10 palabras cada uno.",
+      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida, Claude crea 6 temas nuevos con 10 palabras cada uno.",
       playersLegend: "Jugadores (de 2 a 9)", addPlayer: "Añadir jugador", remove: "Quitar",
       playerDefault: "Jugador {n}", playerAria: "Nombre del jugador {n}", removeAria: "Quitar jugador {n}",
       timeLegend: "Tiempo por ronda", drawerPoint: "Quien dibuja también gana 1 punto si aciertan su palabra",
@@ -355,14 +386,23 @@
       stVeiled: "Palabra oculta. Al mostrarla empieza el temporizador.", stPaused: "En pausa",
       endEyebrow: "Las {n} palabras dibujadas", tie: "Empate: {names}", wins: "¡Gana {name}!",
       point: "punto", points: "puntos",
-      metaSetup: "{n} temas disponibles", metaGame: "Ronda {r} · {d} / {t} palabras",
+      metaSetup: "Los temas se crean de nuevo en cada partida",
+      loading: "Claude está creando 6 temas con 10 palabras cada uno …", cancel: "Cancelar",
+      retry: "Reintentar", useFallback: "Jugar con la lista de reserva",
+      errUnavailable: "Aquí no se pueden crear palabras nuevas porque Claude no está disponible en esta vista (por ejemplo, un archivo abierto en local).",
+      errNotGranted: "No se permitió el acceso a Claude. Sin él no se pueden crear palabras nuevas.",
+      errRate: "Ahora mismo hay demasiadas solicitudes a Claude. Inténtalo de nuevo en un minuto.",
+      errGenerate: "No se pudieron crear las palabras.",
+      srcClaude: "Temas y palabras creados por Claude para esta partida.",
+      srcFallback: "Lista de reserva: no se pudieron crear palabras nuevas para esta partida.", metaGame: "Ronda {r} · {d} / {t} palabras",
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
       lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Jingle", listenAria: "Escuchar el jingle del jugador {n}"
     }
   };
 
-  // ---------- Themenpool ----------
+  // ---------- Ersatzliste ----------
+  // Wird nur verwendet, wenn Claude keine neuen Begriffe liefern kann und die Spieler das ausdrücklich wählen.
   // 30 Themen mit je 30 Wörtern, jeweils [Deutsch, Englisch, Spanisch].
   // Aufnahmekriterium: konkret, in unter einer Minute erkennbar zeichenbar, in allen drei Sprachen
   // eindeutig übersetzbar. Jedes Wort kommt im Pool nur einmal vor.
@@ -399,8 +439,8 @@
     { name: ["Hobbys & Freizeit", "Hobbies & Leisure", "Aficiones y ocio"], words: [["Schach","Chess","Ajedrez"],["Lagerfeuer","Campfire","Hoguera"],["Angel","Fishing rod","Caña de pescar"],["Zelt","Tent","Tienda de campaña"],["Spielkarten","Playing cards","Naipes"],["Wollknäuel","Ball of yarn","Ovillo de lana"],["Staffelei","Easel","Caballete"],["Picknickkorb","Picnic basket","Cesta de picnic"],["Grill","Barbecue grill","Barbacoa"],["Modellflugzeug","Model airplane","Avión de modelismo"],["Aquarium","Aquarium","Acuario"],["Briefmarke","Postage stamp","Sello de correos"],["Origami","Origami","Papiroflexia"],["Kreuzworträtsel","Crossword","Crucigrama"],["Töpferscheibe","Potter's wheel","Torno de alfarero"],["Nähmaschine","Sewing machine","Máquina de coser"],["Yoga","Yoga","Yoga"],["3D-Brille","3D glasses","Gafas 3D"],["Brettspiel","Board game","Juego de mesa"],["Dartscheibe","Dartboard","Diana"],["Minigolf","Mini golf","Minigolf"],["Fotoalbum","Photo album","Álbum de fotos"],["Fernglas","Binoculars","Prismáticos"],["Schlauchboot","Inflatable boat","Bote hinchable"],["Sudoku","Sudoku","Sudoku"],["Kanu","Canoe","Canoa"],["Schlafsack","Sleeping bag","Saco de dormir"],["Wanderkarte","Hiking map","Mapa de senderismo"],["Tagebuch","Diary","Diario"],["Fallschirmspringen","Skydiving","Paracaidismo"]] }
   ];
   var THEMEN_PRO_SPIEL = 6, WOERTER_PRO_THEMA = 10;
-  var TOTAL = THEMEN_PRO_SPIEL * WOERTER_PRO_THEMA;
-  var STORAGE_KEY = "zrag-state-v6";
+  var STORAGE_KEY = "zrag-state-v7";
+  var RECENT_KEY = "zrag-recent-topics";
   var MAX_PLAYERS = 9, MIN_PLAYERS = 2, LOW_SECONDS = 10;
 
   var lang = "de";           // Start immer auf Deutsch
@@ -417,20 +457,128 @@
     return a;
   }
   function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
-  // Zufällige Auswahl: 6 Themen aus dem Pool, je 10 Wörter (als Indizes, damit die Sprache jederzeit wechseln kann)
-  function drawThemes() {
+  // Ein Thema im Spiel: { name: [de, en, es], words: [[de, en, es], ...] }
+  // Ersatz: 6 zufällige Themen der Ersatzliste mit je 10 zufälligen Wörtern
+  function fallbackThemes() {
     return shuffle(range(POOL.length)).slice(0, THEMEN_PRO_SPIEL).map(function (p) {
-      return { p: p, w: shuffle(range(POOL[p].words.length)).slice(0, WOERTER_PRO_THEMA) };
+      return { name: POOL[p].name.slice(), words: shuffle(POOL[p].words).slice(0, WOERTER_PRO_THEMA) };
     });
   }
-  function topicName(ti) { return POOL[state.themen[ti].p].name[L()]; }
-  function wordText(ti, wi) { var th = state.themen[ti]; return POOL[th.p].words[th.w[wi]][L()]; }
+  function topicName(ti) { return state.themen[ti].name[L()]; }
+  function wordText(ti, wi) { return state.themen[ti].words[wi][L()]; }
+  function totalWords() { return state.themen.reduce(function (s, th) { return s + th.words.length; }, 0); }
+
+  // ---------- Dynamische Begriffe von Claude ----------
+  var samplePromise = (window.claude && typeof window.claude.use === "function")
+    ? window.claude.use("sample").catch(function () { return null; })
+    : Promise.resolve(null);
+
+  function loadRecent() {
+    try { var r = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); return Array.isArray(r) ? r.slice(0, 36) : []; }
+    catch (e) { return []; }
+  }
+  function rememberTopics(themen) {
+    var names = themen.map(function (th) { return th.name[1]; });
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(names.concat(loadRecent()).slice(0, 36))); } catch (e) {}
+  }
+
+  function buildPrompt() {
+    var recent = loadRecent();
+    return [
+      "You create the content for one round of a Pictionary-style drawing game. The players speak German, English and Spanish.",
+      "Create exactly " + THEMEN_PRO_SPIEL + " categories with exactly " + WOERTER_PRO_THEMA + " words each.",
+      "",
+      "Rules for the words:",
+      "- Every word is a concrete object, animal, person or role, place, food, or clearly visible action that a person can draw recognizably on a whiteboard in under a minute, without writing letters or numbers.",
+      "- Every word has a clear, common equivalent in German, English and Spanish. No regional or dialect words (no Swiss or Austrian German), no brand names, no names of real people, nothing abstract.",
+      "- No word appears twice in the whole game. Mix easy, medium and harder words. Family-friendly.",
+      "- German: standard German, nouns capitalized, no articles, write \"ss\" instead of \"ß\". English: American English, no articles. Spanish: Spanish from Spain, no articles. Capitalize the first letter in every language.",
+      "",
+      "Rules for the categories:",
+      "- Make the six categories clearly different from each other and varied: combine everyday themes with unusual, specific or playful ones (for example a setting, an occupation's world, an era, an activity), not only broad textbook groups.",
+      "- Category names are short (at most 4 words) and translated into all three languages.",
+      recent.length ? "- Do not reuse or closely resemble these recently played categories: " + recent.join("; ") + "." : "",
+      "",
+      "Variation key for this game: " + Math.random().toString(36).slice(2, 10) + " (use it to vary your choices).",
+      "",
+      "Reply with only a JSON array, no other text, in exactly this shape:",
+      '[{"name":{"de":"...","en":"...","es":"..."},"words":[{"de":"...","en":"...","es":"..."}, ... ' + WOERTER_PRO_THEMA + ' words]}, ... ' + THEMEN_PRO_SPIEL + ' categories]'
+    ].filter(function (line, i, all) { return line !== "" || all[i - 1] !== ""; }).join("\n");
+  }
+
+  function triple(o) {
+    if (!o || typeof o !== "object") return null;
+    var out = [o.de, o.en, o.es].map(function (v) { return typeof v === "string" ? v.trim().slice(0, 48) : ""; });
+    return out.every(Boolean) ? out : null;
+  }
+  // Antwort prüfen: höchstens 6 Themen à 10 Wörter, keine doppelten Wörter
+  function parseThemes(raw) {
+    if (raw && !Array.isArray(raw) && Array.isArray(raw.categories)) raw = raw.categories;
+    if (!Array.isArray(raw)) return null;
+    var seen = {}, out = [];
+    raw.forEach(function (cat) {
+      if (out.length >= THEMEN_PRO_SPIEL || !cat) return;
+      var name = triple(cat.name);
+      if (!name || !Array.isArray(cat.words)) return;
+      var words = [];
+      cat.words.forEach(function (w) {
+        var tr = triple(w);
+        if (!tr || words.length >= WOERTER_PRO_THEMA) return;
+        var key = tr[0].toLowerCase();
+        if (seen[key]) return;
+        seen[key] = true;
+        words.push(tr);
+      });
+      if (words.length >= WOERTER_PRO_THEMA) out.push({ name: name, words: words });
+    });
+    return out.length >= 3 ? out : null;
+  }
+
+  var gen = null;   // { phase: "loading"|"error", errKey, ctl, started, names, dur, drawerPoint }
+  var genTimer = null;
+
+  async function generateAndStart(names, dur, drawerPoint) {
+    if (gen && gen.phase === "loading") return;
+    var ctl = new AbortController();
+    gen = { phase: "loading", ctl: ctl, started: Date.now(), names: names, dur: dur, drawerPoint: drawerPoint };
+    clearInterval(genTimer);
+    genTimer = setInterval(renderGen, 1000);
+    render();
+    var sample = await samplePromise;
+    if (ctl.signal.aborted) return;
+    if (!sample) return genFailed("errUnavailable");
+    try {
+      var raw = await sample.json(buildPrompt(), { signal: ctl.signal, cache: false, modelTier: "quick" });
+      var themen = parseThemes(raw);
+      if (!themen) return genFailed("errGenerate");
+      clearInterval(genTimer); gen = null;
+      rememberTopics(themen);
+      startGame(names, dur, drawerPoint, themen, "claude");
+    } catch (e) {
+      var code = e && e.code;
+      if (code === "cancelled") return;
+      genFailed(code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled"
+        ? "errNotGranted" : code === "rate_limited" ? "errRate" : "errGenerate");
+    }
+  }
+  function genFailed(key) {
+    clearInterval(genTimer);
+    if (!gen) return;
+    gen.phase = "error"; gen.errKey = key;
+    render();
+  }
+  function cancelGen() {
+    if (gen && gen.ctl) gen.ctl.abort();
+    clearInterval(genTimer);
+    gen = null;
+    render();
+  }
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {};
   ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
    "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
-   "btnVeil", "btnReset", "keysHint", "btnSound", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
   ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
@@ -559,14 +707,14 @@
   }
   function randInt(n) { return Math.floor(Math.random() * n); }
 
-  function startGame(names, duration, drawerPoint) {
-    var themen = drawThemes();
+  function startGame(names, duration, drawerPoint, themen, source) {
     state = {
       players: names.map(function (n) { return { name: n, score: 0 }; }),
       duration: duration,
       drawerPoint: drawerPoint,
       themen: themen,
-      remaining: themen.map(function (th) { return range(th.w.length); }),
+      remaining: themen.map(function (th) { return range(th.words.length); }),
+      source: source,
       current: null, round: 0, result: null, finished: false, started: false,
       drawer: randInt(names.length),   // erster Zeichner zufällig
       timer: { running: false, endsAt: 0, leftMs: duration * 1000 }
@@ -708,7 +856,7 @@
     setupError = null;
     var dur = parseInt((document.querySelector('input[name="duration"]:checked') || {}).value || "60", 10);
     unlockAudio();
-    startGame(names, dur, el.drawerPoint.checked);
+    generateAndStart(names, dur, el.drawerPoint.checked);
   }
   function showError(key) { setupError = key; render(); }
 
@@ -730,10 +878,29 @@
     el.langSwitch.setAttribute("aria-label", t("lang"));
     el.btnSound.textContent = soundOn ? t("soundOn") : t("soundOff");
     el.btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
-    el.rules.textContent = t("rules", { pool: POOL.length });
+    el.rules.textContent = t("rules");
+    renderGen();
     el.keysHint.innerHTML = t("keys");
     el.setupError.hidden = !setupError;
     if (setupError) el.setupError.textContent = t(setupError);
+  }
+
+  function renderGen() {
+    var on = !!gen && !state;
+    el.genBox.hidden = !on;
+    el.btnStart.disabled = on && gen.phase === "loading";
+    if (!on) return;
+    var loading = gen.phase === "loading";
+    el.genSpinner.hidden = !loading;
+    el.genMsg.textContent = loading
+      ? t("loading") + " " + Math.round((Date.now() - gen.started) / 1000) + " s"
+      : t(gen.errKey);
+    el.btnRetry.hidden = loading || gen.errKey === "errUnavailable";
+    el.btnFallback.hidden = loading;
+    el.btnCancel.hidden = false;
+    el.btnRetry.textContent = t("retry");
+    el.btnFallback.textContent = t("useFallback");
+    el.btnCancel.textContent = t("cancel");
   }
 
   function renderTopics() {
@@ -741,7 +908,7 @@
     el.topics.hidden = !state;
     if (!state) return;
     state.themen.forEach(function (th, i) {
-      var total = th.w.length;
+      var total = th.words.length;
       var done = total - state.remaining[i].length;
       var chip = document.createElement("div");
       chip.className = "chip" + (done === total ? " done" : "") +
@@ -818,7 +985,7 @@
     var sorted = state.players.slice().sort(function (a, b) { return b.score - a.score; });
     var best = sorted[0].score;
     var winners = sorted.filter(function (p) { return p.score === best; });
-    el.endEyebrow.textContent = t("endEyebrow", { n: TOTAL });
+    el.endEyebrow.textContent = t("endEyebrow", { n: totalWords() });
     el.endTitle.textContent = winners.length > 1
       ? t("tie", { names: winners.map(function (p) { return p.name; }).join(", ") })
       : t("wins", { name: winners[0].name });
@@ -839,13 +1006,17 @@
     renderStatic();
     renderTopics();
     if (!state) {
-      el.meta.textContent = t("metaSetup", { n: POOL.length });
+      el.meta.textContent = t("metaSetup");
+      el.sourceNote.hidden = true;
       show("setup");
       renderSetupPlayers();
       return;
     }
-    var drawn = TOTAL - state.remaining.reduce(function (s, r) { return s + r.length; }, 0);
-    el.meta.textContent = t("metaGame", { r: state.round, d: drawn, t: TOTAL });
+    var total = totalWords();
+    var drawn = total - state.remaining.reduce(function (s, r) { return s + r.length; }, 0);
+    el.meta.textContent = t("metaGame", { r: state.round, d: drawn, t: total });
+    el.sourceNote.hidden = false;
+    el.sourceNote.textContent = state.source === "claude" ? t("srcClaude") : t("srcFallback");
     if (state.finished) { show("end"); renderEnd(); return; }
 
     show("game");
@@ -866,6 +1037,17 @@
   });
   el.btnSound.addEventListener("click", function () { soundOn = !soundOn; if (soundOn) unlockAudio(); render(); });
   el.btnAddPlayer.addEventListener("click", addPlayer);
+  el.btnCancel.addEventListener("click", cancelGen);
+  el.btnRetry.addEventListener("click", function () {
+    if (!gen) return;
+    var g = gen; gen = null;
+    generateAndStart(g.names, g.dur, g.drawerPoint);
+  });
+  el.btnFallback.addEventListener("click", function () {
+    if (!gen) return;
+    var g = gen; cancelGen();
+    startGame(g.names, g.dur, g.drawerPoint, fallbackThemes(), "fallback");
+  });
   el.btnStart.addEventListener("click", submitSetup);
   el.btnNext.addEventListener("click", function () { unlockAudio(); nextRound(); });
   el.btnPause.addEventListener("click", toggleTimer);
