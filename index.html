@@ -117,7 +117,10 @@
   .field { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; }
   .field legend { padding: 0; margin-bottom: 10px; font-weight: 600; }
   .players { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
+  .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto auto; gap: 4px 8px; align-items: center; }
+  .players .jname { grid-column: 2 / -1; font-size: 0.78rem; color: var(--muted); margin-top: -2px; }
+  .reveal-bar { height: 4px; max-width: 320px; margin: 10px auto 0; border-radius: 2px; background: var(--chip); overflow: hidden; }
+  .reveal-bar span { display: block; height: 100%; background: var(--c, var(--marker)); transform-origin: left; }
   .players .num { justify-self: center; }
   .players button { padding: 8px 12px; }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; flex-wrap: wrap; }
@@ -310,6 +313,7 @@
       <div>
         <div class="eyebrow" data-i18n="word"></div>
         <div class="word" id="word">–</div>
+        <div class="reveal-bar" id="revealBar" hidden><span></span></div>
       </div>
       <div class="timer" id="timer">
         <div class="time" id="time">0</div>
@@ -372,7 +376,7 @@
   var I18N = {
     de: {
       tagline: "Zeichnen & Raten", newGame: "Neues Spiel",
-      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen.",
+      rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen. Nach dem Aufdecken wird der Begriff nach 3 Sekunden automatisch wieder verdeckt.",
       playersLegend: "Spieler (2 bis 9)", addPlayer: "Spieler hinzufügen", remove: "Entfernen",
       playerDefault: "Spieler {n}", playerAria: "Name Spieler {n}", removeAria: "Spieler {n} entfernen",
       timeLegend: "Zeit pro Runde", drawerPoint: "Zeichner erhält ebenfalls 1 Punkt, wenn sein Begriff erraten wird",
@@ -406,7 +410,7 @@
     },
     en: {
       tagline: "Draw & Guess", newGame: "New game",
-      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. For every game, Claude puts together 6 new topics with 10 words each.",
+      rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. For every game, Claude puts together 6 new topics with 10 words each. Once revealed, the word is hidden again automatically after 3 seconds.",
       playersLegend: "Players (2 to 9)", addPlayer: "Add player", remove: "Remove",
       playerDefault: "Player {n}", playerAria: "Name of player {n}", removeAria: "Remove player {n}",
       timeLegend: "Time per round", drawerPoint: "The drawer also gets 1 point when their word is guessed",
@@ -440,7 +444,7 @@
     },
     es: {
       tagline: "Dibuja y adivina", newGame: "Nueva partida",
-      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida, Claude crea 6 temas nuevos con 10 palabras cada uno.",
+      rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida, Claude crea 6 temas nuevos con 10 palabras cada uno. Una vez mostrada, la palabra vuelve a ocultarse sola a los 3 segundos.",
       playersLegend: "Jugadores (de 2 a 9)", addPlayer: "Añadir jugador", remove: "Quitar",
       playerDefault: "Jugador {n}", playerAria: "Nombre del jugador {n}", removeAria: "Quitar jugador {n}",
       timeLegend: "Tiempo por ronda", drawerPoint: "Quien dibuja también gana 1 punto si aciertan su palabra",
@@ -474,7 +478,7 @@
     },
     it: {
       tagline: "Disegna e indovina", newGame: "Nuova partita",
-      rules: "A ogni turno una persona disegna alla lavagna la parola mostrata e gli altri indovinano. La parola è inizialmente coperta: chi disegna la scopre quando è già alla lavagna, e in quel momento parte il timer; gli ultimi 10 secondi vengono scanditi da un suono. Chi indovina per primo ottiene un punto e sente il proprio jingle. Il primo a disegnare viene estratto a sorte; poi disegna chi ha indovinato il turno precedente. A ogni partita Claude crea 6 nuove categorie con 10 parole ciascuna.",
+      rules: "A ogni turno una persona disegna alla lavagna la parola mostrata e gli altri indovinano. La parola è inizialmente coperta: chi disegna la scopre quando è già alla lavagna, e in quel momento parte il timer; gli ultimi 10 secondi vengono scanditi da un suono. Chi indovina per primo ottiene un punto e sente il proprio jingle. Il primo a disegnare viene estratto a sorte; poi disegna chi ha indovinato il turno precedente. A ogni partita Claude crea 6 nuove categorie con 10 parole ciascuna. Una volta scoperta, la parola si copre di nuovo da sola dopo 3 secondi.",
       playersLegend: "Giocatori (da 2 a 9)", addPlayer: "Aggiungi giocatore", remove: "Rimuovi",
       playerDefault: "Giocatore {n}", playerAria: "Nome del giocatore {n}", removeAria: "Rimuovi giocatore {n}",
       timeLegend: "Tempo per turno", drawerPoint: "Anche chi disegna ottiene 1 punto se la sua parola viene indovinata",
@@ -508,7 +512,7 @@
     },
     pt: {
       tagline: "Desenhe e adivinhe", newGame: "Novo jogo",
-      rules: "Em cada rodada, uma pessoa desenha no quadro a palavra mostrada e os outros adivinham. A palavra começa escondida: quem desenha a revela quando já está no quadro, e nesse momento o cronômetro começa; os últimos 10 segundos são contados com um som. Quem acertar primeiro ganha um ponto e ouve o seu próprio jingle. O primeiro a desenhar é sorteado; depois desenha quem acertou a rodada anterior. A cada jogo, o Claude cria 6 categorias novas com 10 palavras cada.",
+      rules: "Em cada rodada, uma pessoa desenha no quadro a palavra mostrada e os outros adivinham. A palavra começa escondida: quem desenha a revela quando já está no quadro, e nesse momento o cronômetro começa; os últimos 10 segundos são contados com um som. Quem acertar primeiro ganha um ponto e ouve o seu próprio jingle. O primeiro a desenhar é sorteado; depois desenha quem acertou a rodada anterior. A cada jogo, o Claude cria 6 categorias novas com 10 palavras cada. Depois de revelada, a palavra volta a ficar escondida sozinha após 3 segundos.",
       playersLegend: "Jogadores (de 2 a 9)", addPlayer: "Adicionar jogador", remove: "Remover",
       playerDefault: "Jogador {n}", playerAria: "Nome do jogador {n}", removeAria: "Remover jogador {n}",
       timeLegend: "Tempo por rodada", drawerPoint: "Quem desenha também ganha 1 ponto quando a sua palavra é adivinhada",
@@ -733,7 +737,7 @@
   var el = {};
   ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
    "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
-   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "revealBar", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
   ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
@@ -811,28 +815,51 @@
     try { tone(sec <= 3 ? 1320 : 990, 0, 0.09, "square", 0.08); } catch (e) {}
   }
 
-  // Eigener Jingle pro Spielerplatz (1–9): Noten als MIDI-Nummern, Längen in Sekunden
+  // Jingle pro Spielerplatz (1–9): Ausschnitte bekannter Musikstücke, deren Urheberrecht abgelaufen ist,
+  // im Browser nachgespielt. Noten als MIDI-Nummern (null = Pause), Längen in Sekunden, je höchstens 3 s.
   var JINGLES = [
-    { type: "triangle", notes: [60, 64, 67, 72],         lens: [0.12, 0.12, 0.12, 0.4] },
-    { type: "square",   notes: [72, 71, 72, 76, 79],     lens: [0.1, 0.1, 0.1, 0.12, 0.4] },
-    { type: "sawtooth", notes: [67, 67, 74, 72],         lens: [0.16, 0.08, 0.2, 0.45] },
-    { type: "triangle", notes: [65, 69, 72, 77, 72, 77], lens: [0.09, 0.09, 0.09, 0.15, 0.09, 0.4] },
-    { type: "sine",     notes: [76, 79, 84, 79, 88],     lens: [0.1, 0.1, 0.18, 0.1, 0.45] },
-    { type: "square",   notes: [62, 66, 69, 74, 69, 74], lens: [0.08, 0.08, 0.08, 0.2, 0.08, 0.4] },
-    { type: "triangle", notes: [70, 74, 77, 82],         lens: [0.2, 0.1, 0.1, 0.45] },
-    { type: "sine",     notes: [64, 67, 71, 76, 74, 76], lens: [0.1, 0.1, 0.1, 0.2, 0.1, 0.45] },
-    { type: "square",   notes: [57, 64, 69, 72, 76],     lens: [0.14, 0.07, 0.07, 0.14, 0.45] }
+    { title: "Beethoven – Ode an die Freude", type: "triangle",
+      notes: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62],
+      lens:  [0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.27, 0.09, 0.4] },
+    { title: "Beethoven – Für Elise", type: "sine",
+      notes: [76, 75, 76, 75, 76, 71, 74, 72, 69],
+      lens:  [0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.6] },
+    { title: "Mozart – Eine kleine Nachtmusik", type: "triangle",
+      notes: [67, null, 62, 67, null, 62, 67, 62, 67, 71, 74],
+      lens:  [0.28, 0.08, 0.16, 0.28, 0.08, 0.16, 0.14, 0.14, 0.14, 0.14, 0.5] },
+    { title: "Grieg – In der Halle des Bergkönigs", type: "square",
+      notes: [59, 61, 62, 64, 66, 62, 66, 65, 61, 65, 64, 60, 64],
+      lens:  [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 0.15, 0.15, 0.3, 0.15, 0.15, 0.35] },
+    { title: "Rossini – Wilhelm Tell (Ouvertüre)", type: "square",
+      notes: [67, 67, 67, 67, 67, 67, 67, 67, 72, 74, 76],
+      lens:  [0.1, 0.1, 0.22, 0.1, 0.1, 0.22, 0.1, 0.1, 0.22, 0.22, 0.45] },
+    { title: "Offenbach – Cancan", type: "triangle",
+      notes: [60, 62, 65, 64, 62, 67, 67, 67, 69, 64, 65, 62, 62, 62, 65, 64],
+      lens:  [0.28, 0.14, 0.14, 0.14, 0.14, 0.28, 0.28, 0.14, 0.14, 0.14, 0.14, 0.28, 0.28, 0.14, 0.14, 0.15] },
+    { title: "Mozart – Rondo alla turca", type: "sine",
+      notes: [71, 69, 68, 69, 72, null, 74, 72, 71, 72, 76],
+      lens:  [0.12, 0.12, 0.12, 0.12, 0.36, 0.12, 0.12, 0.12, 0.12, 0.12, 0.5] },
+    { title: "Strauss – An der schönen blauen Donau", type: "sine",
+      notes: [62, 62, 66, 69, 69, null, 81, 81, null, 78, 78],
+      lens:  [0.3, 0.3, 0.3, 0.3, 0.45, 0.15, 0.2, 0.3, 0.15, 0.2, 0.3] },
+    { title: "Wagner – Walkürenritt", type: "sawtooth",
+      notes: [59, 54, 59, 62, 59, 62, 66, 62, 66, 69],
+      lens:  [0.2, 0.07, 0.15, 0.45, 0.2, 0.07, 0.15, 0.45, 0.2, 0.55] }
   ];
   function playJingle(i, delay) {
     var j = JINGLES[i % JINGLES.length], at = delay || 0;
     if (!audio || !soundOn) return at;
     try {
       j.notes.forEach(function (n, k) {
-        tone(midi(n), at, j.lens[k] * 1.1, j.type, j.type === "sine" ? 0.25 : 0.12);
+        if (n !== null) {
+          var vol = j.type === "sine" ? 0.24 : j.type === "triangle" ? 0.2 : 0.07;
+          tone(midi(n), at, j.lens[k] * 1.05, j.type, vol);
+          tone(midi(n + 12), at, j.lens[k] * 0.8, "sine", 0.04);   // leiser Oberton für einen volleren Klang
+        }
         at += j.lens[k];
       });
     } catch (e) {}
-    return at + 0.25;
+    return at + 0.3;
   }
 
   function beep() {
@@ -929,6 +956,28 @@
       save();
     }
     render();
+    if (!veiled) scheduleAutoVeil();
+  }
+
+  // Aufgedeckter Begriff wird nach 3 s automatisch wieder verdeckt
+  var AUTO_VEIL_MS = 3000;
+  var veilTimer = null;
+  function scheduleAutoVeil() {
+    clearTimeout(veilTimer);
+    veilTimer = setTimeout(function () {
+      veilTimer = null;
+      if (state && !state.finished && !veiled) { veiled = true; render(); }
+    }, AUTO_VEIL_MS);
+    el.revealBar.hidden = false;
+    var bar = el.revealBar.firstElementChild;
+    if (bar.animate) {
+      bar.getAnimations().forEach(function (a) { a.cancel(); });
+      bar.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], { duration: AUTO_VEIL_MS, fill: "forwards" });
+    }
+  }
+  function cancelAutoVeil() {
+    clearTimeout(veilTimer); veilTimer = null;
+    el.revealBar.hidden = true;
   }
 
   function adjust(i, delta) {
@@ -961,6 +1010,8 @@
     if (LANGS.indexOf(next) < 0 || next === lang) return;
     lang = next;
     render();
+    // Nach dem Umschalten bleibt der übersetzte Begriff wieder volle 3 s sichtbar
+    if (state && !state.finished && !veiled) scheduleAutoVeil();
   }
 
   // ---------- Einrichtung ----------
@@ -974,7 +1025,8 @@
       li.innerHTML = '<span class="num badge">' + (i + 1) + '</span>' +
         '<input type="text" maxlength="24" id="player-' + i + '">' +
         '<button type="button" class="listen"></button>' +
-        '<button type="button" class="remove"></button>';
+        '<button type="button" class="remove"></button>' +
+        '<span class="jname"></span>';
       var input = li.querySelector("input");
       input.value = setupName(i);
       input.setAttribute("aria-label", t("playerAria", { n: i + 1 }));
@@ -985,6 +1037,7 @@
       var lb = li.querySelector(".listen");
       lb.textContent = t("listen");
       lb.setAttribute("aria-label", t("listenAria", { n: i + 1 }));
+      li.querySelector(".jname").textContent = "♪ " + JINGLES[i % JINGLES.length].title;
       lb.addEventListener("click", function () { unlockAudio(); var was = soundOn; soundOn = true; playJingle(i); soundOn = was; });
       var btn = li.querySelector(".remove");
       btn.textContent = t("remove");
@@ -1197,6 +1250,7 @@
     el.game.querySelector(".stage").className = "panel stage pc" + (state.current.t % 6 + 1);
     el.word.textContent = veiled ? t("veiled") : wordText(state.current.t, state.current.w);
     el.word.classList.toggle("veiled", veiled);
+    if (veiled) cancelAutoVeil();
     el.btnVeil.textContent = veiled ? t("reveal") : t("hide");
     renderScores();
     renderStatus();
