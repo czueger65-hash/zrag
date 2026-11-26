@@ -8,7 +8,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 | Taste | Funktion |
 |-------|----------|
-| `DE` / `EN` / `ES` | Sprache umschalten (Knöpfe oben rechts, jederzeit) |
+| `DE` / `EN` / `ES` / `IT` / `PT` | Sprache umschalten (Knöpfe oben rechts, jederzeit) |
 | `Enter` | Nächste Runde (Thema + Wort, Timer startet) |
 | `Leertaste` | Timer pausieren/fortsetzen |
 | `V` | Begriff aufdecken/verdecken (erstes Aufdecken startet den Timer) |
@@ -16,14 +16,14 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 ## Sprachen
 
-- Oberfläche, Themen und Wörter gibt es auf Deutsch, Englisch und Spanisch.
+- Oberfläche, Themen und Wörter gibt es auf Deutsch, Englisch, Spanisch, Italienisch und Portugiesisch (brasilianisch).
 - Die App startet immer auf Deutsch. Die Sprache lässt sich jederzeit umschalten, auch mitten in einer Runde; Thema und Wort werden sofort übersetzt angezeigt.
 - Spielernamen werden nicht übersetzt.
 
 ## Spiellogik
 
-- Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen (höchstens 60 Begriffe pro Spiel), jeweils auf Deutsch, Englisch und Spanisch.
-- Vorgaben an Claude: konkret und in unter einer Minute erkennbar zeichenbar, in allen drei Sprachen eindeutig übersetzbar, keine regionalen Begriffe, keine Marken, kein Wort doppelt. Die Themen der letzten Spiele (im Browser gemerkt) werden ausgeschlossen, damit sich nichts wiederholt.
+- Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen (höchstens 60 Begriffe pro Spiel), jeweils in allen fünf Sprachen.
+- Vorgaben an Claude: konkret und in unter einer Minute erkennbar zeichenbar, in allen fünf Sprachen eindeutig übersetzbar, keine regionalen Begriffe, keine Marken, kein Wort doppelt. Die Themen der letzten Spiele (im Browser gemerkt) werden ausgeschlossen, damit sich nichts wiederholt.
 - Die Antwort wird geprüft: unvollständige Einträge und doppelte Wörter werden verworfen, mehr als 6 Themen oder 10 Wörter werden abgeschnitten.
 - Dafür braucht die Seite die Artifact-Funktion „Claude fragen“ (`sample`). Beim ersten Spielstart fragt claude.ai, ob die Seite Claude nutzen darf; die Anfragen laufen über das Claude-Konto der Person, die die Seite geöffnet hat.
 - Ist Claude nicht erreichbar (z. B. `index.html` lokal geöffnet) oder schlägt die Erstellung fehl, kann man es erneut versuchen oder bewusst mit der eingebauten Ersatzliste (30 Themen à 30 Wörter) spielen. Die Seite zeigt im Spiel an, woher die Begriffe stammen.
@@ -38,4 +38,4 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
-Die Anweisung an Claude steht in `index.html` in der Funktion `buildPrompt`. Die Ersatzliste steht im Array `POOL`, jeweils als `[Deutsch, Englisch, Spanisch]`. Die Texte der Oberfläche stehen im Objekt `I18N`.
+Die Anweisung an Claude steht in `index.html` in der Funktion `buildPrompt`. Die Ersatzliste steht im Array `POOL`, jeweils als `[Deutsch, Englisch, Spanisch, Italienisch, Portugiesisch]`. Die Texte der Oberfläche stehen im Objekt `I18N`.
