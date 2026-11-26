@@ -24,6 +24,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 
 - Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen (höchstens 60 Begriffe pro Spiel), jeweils in allen fünf Sprachen.
 - Vorgaben an Claude: konkret und in unter einer Minute erkennbar zeichenbar, in allen fünf Sprachen eindeutig übersetzbar, keine regionalen Begriffe, keine Marken, kein Wort doppelt. Die Themen der letzten Spiele (im Browser gemerkt) werden ausgeschlossen, damit sich nichts wiederholt.
+- Nach der Erstellung zeigt eine eigene Seite die Themen des Spiels (ohne die Begriffe). Erst mit „Spiel beginnen“ (oder `Enter`) startet das Spiel; „Andere Themen erstellen“ lässt Claude neue Themen erstellen, „Zurück“ führt zur Einrichtung.
 - Die Antwort wird geprüft: unvollständige Einträge und doppelte Wörter werden verworfen, mehr als 6 Themen oder 10 Wörter werden abgeschnitten.
 - Dafür braucht die Seite die Artifact-Funktion „Claude fragen“ (`sample`). Beim ersten Spielstart fragt claude.ai, ob die Seite Claude nutzen darf; die Anfragen laufen über das Claude-Konto der Person, die die Seite geöffnet hat.
 - Ist Claude nicht erreichbar (z. B. `index.html` lokal geöffnet) oder schlägt die Erstellung fehl, kann man es erneut versuchen oder bewusst mit der eingebauten Ersatzliste (30 Themen à 30 Wörter) spielen. Die Seite zeigt im Spiel an, woher die Begriffe stammen.
