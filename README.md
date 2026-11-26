@@ -1,4 +1,4 @@
-# zrag
+# ZsRAG
 
 Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den angezeigten Begriff, die anderen raten; wer zuerst richtig liegt, gewinnt die Runde.
 

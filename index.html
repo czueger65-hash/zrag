@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>zrag</title>
+<title>ZsRAG</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,18 +21,28 @@
     --marker-ink: #ffffff;
     --ok: #1d8656;
     --warn: #c83434;
+    /* Whiteboard-Marker: Farben für Themen und Spieler */
+    --m1: #1f5fd1; --m2: #d6402f; --m3: #1d8656; --m4: #e08a00; --m5: #7b3fd0; --m6: #0f8f9c;
+    --m7: #d23f8a; --m8: #8a6a1f; --m9: #3b4cc0;
+    --dot: rgba(24, 33, 43, 0.07);
     --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
+      --m1: #77a2ff; --m2: #ff7a66; --m3: #4fcb91; --m4: #ffb547; --m5: #b48cff; --m6: #4fd2de;
+      --m7: #ff7fbf; --m8: #d8b45a; --m9: #8f9bff;
+      --dot: rgba(231, 237, 243, 0.06);
       --paper: #0e141a; --board: #161f28; --ink: #e7edf3; --muted: #93a1b0;
       --line: #283441; --chip: #1e2933; --marker: #77a2ff; --marker-ink: #0b1220;
       --ok: #4fcb91; --warn: #ff6f6f; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
+    --m1: #77a2ff; --m2: #ff7a66; --m3: #4fcb91; --m4: #ffb547; --m5: #b48cff; --m6: #4fd2de;
+    --m7: #ff7fbf; --m8: #d8b45a; --m9: #8f9bff;
+    --dot: rgba(231, 237, 243, 0.06);
     --paper: #0e141a; --board: #161f28; --ink: #e7edf3; --muted: #93a1b0;
     --line: #283441; --chip: #1e2933; --marker: #77a2ff; --marker-ink: #0b1220;
     --ok: #4fcb91; --warn: #ff6f6f; color-scheme: dark;
@@ -42,7 +52,9 @@
   [hidden] { display: none !important; }
   html, body { margin: 0; }
   body {
-    background: var(--paper);
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+    background-size: 22px 22px;
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 15px;
@@ -55,7 +67,20 @@
 
   .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { font-family: var(--font-display); font-weight: 800; font-size: 2rem; letter-spacing: -0.02em; margin: 0; }
-  .brand span { color: var(--marker); }
+  .brand { display: flex; letter-spacing: 0; }
+  .brand span:nth-child(1) { color: var(--m1); }
+  .brand span:nth-child(2) { color: var(--m2); font-size: 0.78em; align-self: flex-end; margin-bottom: 0.08em; }
+  .brand span:nth-child(3) { color: var(--m3); }
+  .brand span:nth-child(4) { color: var(--m4); }
+  .brand span:nth-child(5) { color: var(--m5); }
+  .brand span:nth-child(6) { color: var(--ink); }
+  .pc1 { --c: var(--m1); } .pc2 { --c: var(--m2); } .pc3 { --c: var(--m3); }
+  .pc4 { --c: var(--m4); } .pc5 { --c: var(--m5); } .pc6 { --c: var(--m6); }
+  .pc7 { --c: var(--m7); } .pc8 { --c: var(--m8); } .pc9 { --c: var(--m9); }
+  .badge {
+    display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: var(--c, var(--muted)); color: var(--board); font-weight: 700; font-size: 0.8rem; font-variant-numeric: tabular-nums;
+  }
   .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
 
   .panel { background: var(--board); border: 1px solid var(--line); border-radius: 14px; padding: 24px; min-width: 0; }
@@ -93,7 +118,7 @@
   .field legend { padding: 0; margin-bottom: 10px; font-weight: 600; }
   .players { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
-  .players .num { font-family: var(--font-mono); color: var(--muted); text-align: center; }
+  .players .num { justify-self: center; }
   .players button { padding: 8px 12px; }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; flex-wrap: wrap; }
   .seg label { position: relative; }
@@ -144,7 +169,9 @@
   }
   .scorelist li.drawing { border-color: var(--line); }
   .scorelist li.winner { border-color: var(--ok); }
-  .scorelist .key { font-family: var(--font-mono); color: var(--muted); font-size: 0.85rem; text-align: center; }
+  .scorelist .key { justify-self: center; width: 1.45rem; height: 1.45rem; font-size: 0.75rem; }
+  .scorelist li.drawing { border-color: var(--c); }
+  .scorelist li { border-left: 4px solid var(--c) !important; }
   .scorelist .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .scorelist .tag { display: block; font-size: 0.72rem; font-weight: 500; color: var(--muted); }
   .scorelist .pts { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; text-align: right; font-variant-numeric: tabular-nums; }
@@ -155,11 +182,13 @@
   /* Themenfortschritt */
   .topics { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
   .chip { background: var(--board); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
-  .chip.active { border-color: var(--marker); box-shadow: inset 0 0 0 1px var(--marker); }
+  .chip { border-top: 4px solid var(--c, var(--line)); }
+  .chip.active { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); background: color-mix(in srgb, var(--c) 8%, var(--board)); }
+  .chip .name::before { content: ""; display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--c); margin-right: 0.4rem; vertical-align: 0.08em; }
   .chip .name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .chip.done .name { color: var(--muted); text-decoration: line-through; }
   .chip .bar { margin-top: 8px; height: 5px; border-radius: 3px; background: var(--chip); overflow: hidden; }
-  .chip .bar span { display: block; height: 100%; background: var(--marker); }
+  .chip .bar span { display: block; height: 100%; background: var(--c, var(--marker)); }
   .chip.done .bar span { background: var(--ok); }
   .chip .count { margin-top: 4px; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 
@@ -169,6 +198,14 @@
   .ranking li { display: grid; grid-template-columns: 2.2rem 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--paper); }
   .ranking li.first { border: 1px solid var(--ok); }
   .ranking .place { font-family: var(--font-display); font-weight: 800; color: var(--muted); }
+  .ranking li { border-left: 4px solid var(--c); }
+  .stage .topic { color: var(--c, var(--ink)); }
+  .seg { justify-self: start; }
+  .setup, .end {
+    background: linear-gradient(90deg, var(--m1) 0 20%, var(--m2) 20% 40%, var(--m3) 40% 60%, var(--m4) 60% 80%, var(--m5) 80%) top / 100% 6px no-repeat, var(--board);
+    padding-top: 30px;
+  }
+  .stage { border-top: 6px solid var(--c, var(--line)); }
   .ranking li.first .place { color: var(--ok); }
   .ranking .pts { font-family: var(--font-display); font-weight: 800; font-variant-numeric: tabular-nums; }
 
@@ -200,7 +237,7 @@
 <body>
 <div class="shell">
   <header class="top">
-    <h1 class="brand">zrag<span>.</span></h1>
+    <h1 class="brand" aria-label="ZsRAG"><span>Z</span><span>s</span><span>R</span><span>A</span><span>G</span><span>.</span></h1>
     <div class="top-right">
       <div class="meta" id="meta"></div>
       <button type="button" class="sound" id="btnSound" aria-pressed="true"></button>
@@ -815,7 +852,8 @@
     el.playerList.innerHTML = "";
     setupNames.forEach(function (_, i) {
       var li = document.createElement("li");
-      li.innerHTML = '<span class="num">' + (i + 1) + '</span>' +
+      li.className = "pc" + (i % 9 + 1);
+      li.innerHTML = '<span class="num badge">' + (i + 1) + '</span>' +
         '<input type="text" maxlength="24" id="player-' + i + '">' +
         '<button type="button" class="listen"></button>' +
         '<button type="button" class="remove"></button>';
@@ -911,7 +949,7 @@
       var total = th.words.length;
       var done = total - state.remaining[i].length;
       var chip = document.createElement("div");
-      chip.className = "chip" + (done === total ? " done" : "") +
+      chip.className = "chip pc" + (i % 6 + 1) + (done === total ? " done" : "") +
         (state.current && state.current.t === i ? " active" : "");
       chip.innerHTML = '<div class="name"></div><div class="bar"><span style="width:' + (done / total * 100) +
         '%"></span></div><div class="count">' + done + " / " + total + "</div>";
@@ -926,8 +964,8 @@
     state.players.forEach(function (p, i) {
       var li = document.createElement("li");
       var isWinner = state.result && state.result.type === "guessed" && state.result.by === i;
-      li.className = (i === d ? "drawing" : "") + (isWinner ? " winner" : "");
-      li.innerHTML = '<span class="key">' + (i + 1) + '</span>' +
+      li.className = "pc" + (i % 9 + 1) + (i === d ? " drawing" : "") + (isWinner ? " winner" : "");
+      li.innerHTML = '<span class="key badge">' + (i + 1) + '</span>' +
         '<span class="name"></span>' +
         '<span class="pts">' + p.score + '</span>' +
         '<button type="button" class="guess"></button>' +
@@ -994,7 +1032,7 @@
     sorted.forEach(function (p, i) {
       if (p.score !== last) { place = i + 1; last = p.score; }
       var li = document.createElement("li");
-      if (place === 1) li.className = "first";
+      li.className = "pc" + (state.players.indexOf(p) % 9 + 1) + (place === 1 ? " first" : "");
       li.innerHTML = '<span class="place">' + place + '.</span><span class="name"></span><span class="pts">' +
         p.score + " " + (p.score === 1 ? t("point") : t("points")) + "</span>";
       li.querySelector(".name").textContent = p.name;
@@ -1022,6 +1060,7 @@
     show("game");
     el.drawerName.textContent = state.players[drawerIndex()].name;
     el.topic.textContent = topicName(state.current.t);
+    el.game.querySelector(".stage").className = "panel stage pc" + (state.current.t % 6 + 1);
     el.word.textContent = veiled ? t("veiled") : wordText(state.current.t, state.current.w);
     el.word.classList.toggle("veiled", veiled);
     el.btnVeil.textContent = veiled ? t("reveal") : t("hide");
