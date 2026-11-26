@@ -117,8 +117,13 @@
   .field { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; }
   .field legend { padding: 0; margin-bottom: 10px; font-weight: 600; }
   .players { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto auto; gap: 4px 8px; align-items: center; }
-  .players .jname { grid-column: 2 / -1; font-size: 0.78rem; color: var(--muted); margin-top: -2px; }
+  .players li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 6px 8px; align-items: center; }
+  .players .jrow { grid-column: 2 / -1; display: flex; gap: 8px; margin-bottom: 6px; }
+  .players select {
+    flex: 1; min-width: 0; font: inherit; font-size: 0.88rem; color: var(--ink); background: var(--board);
+    border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 8px; padding: 7px 10px;
+  }
+  .players select:focus-visible { outline: 3px solid var(--marker); outline-offset: 2px; }
   .reveal-bar { height: 4px; max-width: 320px; margin: 10px auto 0; border-radius: 2px; background: var(--chip); overflow: hidden; }
   .reveal-bar span { display: block; height: 100%; background: var(--c, var(--marker)); transform-origin: left; }
   .players .num { justify-self: center; }
@@ -403,7 +408,7 @@
       srcFallback: "Ersatzliste: Für dieses Spiel konnten keine neuen Begriffe erstellt werden.", metaGame: "Runde {r} · {d} / {t} Begriffe",
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
-      lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Jingle", listenAria: "Jingle von Spieler {n} anhören",
+      lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Anhören", listenAria: "Jingle von Spieler {n} anhören", jingleAria: "Jingle für Spieler {n} auswählen",
       previewEyebrow: "Themen für dieses Spiel", previewTitle: "{n} Themen sind bereit",
       previewInfo: "Je 10 Begriffe pro Thema. Die Begriffe bleiben geheim, bis der Zeichner sie am Board aufdeckt.",
       confirm: "Spiel beginnen", regen: "Andere Themen erstellen", back: "Zurück", wordsCount: "{n} Begriffe"
@@ -437,7 +442,7 @@
       srcFallback: "Backup list: no new words could be created for this game.", metaGame: "Round {r} · {d} / {t} words",
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
-      lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Jingle", listenAria: "Play jingle of player {n}",
+      lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Listen", listenAria: "Play jingle of player {n}", jingleAria: "Choose jingle for player {n}",
       previewEyebrow: "Topics for this game", previewTitle: "{n} topics are ready",
       previewInfo: "10 words per topic. The words stay secret until the drawer reveals them at the board.",
       confirm: "Start playing", regen: "Create other topics", back: "Back", wordsCount: "{n} words"
@@ -471,7 +476,7 @@
       srcFallback: "Lista de reserva: no se pudieron crear palabras nuevas para esta partida.", metaGame: "Ronda {r} · {d} / {t} palabras",
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
-      lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Jingle", listenAria: "Escuchar el jingle del jugador {n}",
+      lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Escuchar", listenAria: "Escuchar el jingle del jugador {n}", jingleAria: "Elegir jingle del jugador {n}",
       previewEyebrow: "Temas de esta partida", previewTitle: "{n} temas listos",
       previewInfo: "10 palabras por tema. Las palabras siguen ocultas hasta que quien dibuja las muestra en la pizarra.",
       confirm: "Empezar a jugar", regen: "Crear otros temas", back: "Volver", wordsCount: "{n} palabras"
@@ -505,7 +510,7 @@
       srcFallback: "Lista di riserva: per questa partita non è stato possibile creare nuove parole.", metaGame: "Turno {r} · {d} / {t} parole",
       errEmpty: "Dai un nome a ogni giocatore o rimuovi le righe vuote.",
       errDup: "Ogni nome può comparire una sola volta.", errMin: "Servono almeno 2 giocatori.",
-      lang: "Lingua", soundOn: "Audio sì", soundOff: "Audio no", listen: "Jingle", listenAria: "Ascolta il jingle del giocatore {n}",
+      lang: "Lingua", soundOn: "Audio sì", soundOff: "Audio no", listen: "Ascolta", listenAria: "Ascolta il jingle del giocatore {n}", jingleAria: "Scegli il jingle del giocatore {n}",
       previewEyebrow: "Categorie di questa partita", previewTitle: "{n} categorie pronte",
       previewInfo: "10 parole per categoria. Le parole restano segrete finché chi disegna non le scopre alla lavagna.",
       confirm: "Inizia a giocare", regen: "Crea altre categorie", back: "Indietro", wordsCount: "{n} parole"
@@ -539,7 +544,7 @@
       srcFallback: "Lista reserva: não foi possível criar palavras novas para este jogo.", metaGame: "Rodada {r} · {d} / {t} palavras",
       errEmpty: "Dê um nome a cada jogador ou remova as linhas vazias.",
       errDup: "Cada nome só pode aparecer uma vez.", errMin: "São necessários pelo menos 2 jogadores.",
-      lang: "Idioma", soundOn: "Som ligado", soundOff: "Som desligado", listen: "Jingle", listenAria: "Ouvir o jingle do jogador {n}",
+      lang: "Idioma", soundOn: "Som ligado", soundOff: "Som desligado", listen: "Ouvir", listenAria: "Ouvir o jingle do jogador {n}", jingleAria: "Escolher o jingle do jogador {n}",
       previewEyebrow: "Categorias deste jogo", previewTitle: "{n} categorias prontas",
       previewInfo: "10 palavras por categoria. As palavras ficam em segredo até quem desenha revelá-las no quadro.",
       confirm: "Começar a jogar", regen: "Criar outras categorias", back: "Voltar", wordsCount: "{n} palavras"
@@ -712,6 +717,7 @@
     pending = { names: names, dur: dur, drawerPoint: drawerPoint, themen: themen, source: source };
     render();
     el.btnConfirm.focus();
+    playFanfare();
   }
   function confirmPreview() {
     if (!pending) return;
@@ -743,6 +749,7 @@
   var state = null;          // laufendes Spiel
   var veiled = false;        // Wort verdeckt
   var setupNames = [null, null, null];   // null = Standardname in der aktuellen Sprache
+  var setupJingles = [0, 1, 2];          // gewählter Jingle pro Spieler (Index in JINGLES)
   var setupError = null;     // Schlüssel der aktuellen Fehlermeldung
   var resetArmed = null;     // Zeitgeber für zweistufiges "Neu starten"
   var audio = null;
@@ -844,8 +851,38 @@
       lens:  [0.3, 0.3, 0.3, 0.3, 0.45, 0.15, 0.2, 0.3, 0.15, 0.2, 0.3] },
     { title: "Wagner – Walkürenritt", type: "sawtooth",
       notes: [59, 54, 59, 62, 59, 62, 66, 62, 66, 69],
-      lens:  [0.2, 0.07, 0.15, 0.45, 0.2, 0.07, 0.15, 0.45, 0.2, 0.55] }
+      lens:  [0.2, 0.07, 0.15, 0.45, 0.2, 0.07, 0.15, 0.45, 0.2, 0.55] },
+    { title: "Vivaldi – Der Frühling", type: "triangle",
+      notes: [64, 68, 68, 68, 66, 64, 71, 71, 69, 68, 68, 68, 66, 64, 71],
+      lens:  [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.4, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.4] },
+    { title: "Bizet – Habanera (Carmen)", type: "sawtooth",
+      notes: [74, 73, 72, 72, 71, 70, 69, 68, 67, 66, 65],
+      lens:  [0.3, 0.15, 0.15, 0.15, 0.15, 0.3, 0.15, 0.15, 0.15, 0.15, 0.5] },
+    { title: "Brahms – Wiegenlied", type: "sine",
+      notes: [64, 64, 67, 64, 64, 67, 64, 67, 72, 71, 69],
+      lens:  [0.15, 0.15, 0.45, 0.15, 0.15, 0.45, 0.15, 0.15, 0.3, 0.3, 0.45] }
   ];
+
+  // Fanfare beim Ankündigen der Themen: Richard Strauss – Also sprach Zarathustra (Sonnenaufgang),
+  // Melodie mit tiefem Orgelpunkt und Pauken
+  function playFanfare() {
+    if (!audio || !soundOn) return;
+    try {
+      tone(midi(36), 0, 4.2, "sawtooth", 0.035);                  // Orgelpunkt C
+      tone(midi(48), 0, 4.2, "triangle", 0.08);
+      [[60, 0, 0.75], [67, 0.75, 0.75], [72, 1.5, 0.75], [76, 2.25, 0.22], [75, 2.47, 1.4]].forEach(function (n) {
+        tone(midi(n[0]), n[1], n[2], "square", 0.06);
+        tone(midi(n[0]), n[1], n[2], "triangle", 0.16);
+        tone(midi(n[0] - 12), n[1], n[2], "triangle", 0.1);
+      });
+      tone(midi(64), 2.47, 1.4, "triangle", 0.08);                 // Dur-Akkord zum Schluss
+      tone(midi(67), 2.47, 1.4, "triangle", 0.08);
+      [0, 1, 0, 1, 0, 1, 0, 1].forEach(function (k, i) {             // Pauken C–G
+        tone(midi(k ? 43 : 36), 2.5 + i * 0.16, 0.18, "sine", 0.3);
+      });
+      tone(midi(36), 3.85, 0.5, "sine", 0.35);
+    } catch (e) {}
+  }
   function playJingle(i, delay) {
     var j = JINGLES[i % JINGLES.length], at = delay || 0;
     if (!audio || !soundOn) return at;
@@ -891,7 +928,7 @@
 
   function startGame(names, duration, drawerPoint, themen, source) {
     state = {
-      players: names.map(function (n) { return { name: n, score: 0 }; }),
+      players: names.map(function (n, i) { return { name: n, score: 0, jingle: setupJingles[i] }; }),
       duration: duration,
       drawerPoint: drawerPoint,
       themen: themen,
@@ -942,7 +979,7 @@
     var secs = Math.max(1, Math.round((state.duration * 1000 - state.timer.leftMs) / 1000));
     state.result = { type: "guessed", by: i, secs: secs };
     save(); render();
-    playJingle(i);
+    playJingle(jingleOf(i));
   }
 
   function toggleVeil() {
@@ -990,10 +1027,14 @@
   function playWinnerJingles() {
     var best = Math.max.apply(null, state.players.map(function (p) { return p.score; }));
     var at = 0;
-    state.players.forEach(function (p, i) { if (p.score === best) at = playJingle(i, at); });
+    state.players.forEach(function (p, i) { if (p.score === best) at = playJingle(jingleOf(i), at); });
   }
 
-  function namesForSetup() { return state.players.map(function (p) { return p.name; }); }
+  function jingleOf(i) { var j = state.players[i].jingle; return typeof j === "number" ? j : i % JINGLES.length; }
+  function namesForSetup() {
+    setupJingles = state.players.map(function (p, i) { return jingleOf(i); });
+    return state.players.map(function (p) { return p.name; });
+  }
 
   function armReset() {
     if (resetArmed) {
@@ -1024,9 +1065,8 @@
       li.className = "pc" + (i % 9 + 1);
       li.innerHTML = '<span class="num badge">' + (i + 1) + '</span>' +
         '<input type="text" maxlength="24" id="player-' + i + '">' +
-        '<button type="button" class="listen"></button>' +
         '<button type="button" class="remove"></button>' +
-        '<span class="jname"></span>';
+        '<div class="jrow"><select id="jingle-' + i + '"></select><button type="button" class="listen"></button></div>';
       var input = li.querySelector("input");
       input.value = setupName(i);
       input.setAttribute("aria-label", t("playerAria", { n: i + 1 }));
@@ -1037,22 +1077,33 @@
       var lb = li.querySelector(".listen");
       lb.textContent = t("listen");
       lb.setAttribute("aria-label", t("listenAria", { n: i + 1 }));
-      li.querySelector(".jname").textContent = "♪ " + JINGLES[i % JINGLES.length].title;
-      lb.addEventListener("click", function () { unlockAudio(); var was = soundOn; soundOn = true; playJingle(i); soundOn = was; });
+      var sel = li.querySelector("select");
+      sel.setAttribute("aria-label", t("jingleAria", { n: i + 1 }));
+      JINGLES.forEach(function (j, k) {
+        var o = document.createElement("option");
+        o.value = k; o.textContent = "♪ " + j.title;
+        o.disabled = setupJingles.indexOf(k) >= 0 && setupJingles[i] !== k;   // jeder Jingle nur einmal
+        sel.appendChild(o);
+      });
+      sel.value = setupJingles[i];
+      function preview() { unlockAudio(); var was = soundOn; soundOn = true; playJingle(setupJingles[i]); soundOn = was; }
+      sel.addEventListener("change", function () { setupJingles[i] = parseInt(sel.value, 10); renderSetupPlayers(); preview(); });
+      lb.addEventListener("click", preview);
       var btn = li.querySelector(".remove");
       btn.textContent = t("remove");
       btn.setAttribute("aria-label", t("removeAria", { n: i + 1 }));
       btn.disabled = setupNames.length <= MIN_PLAYERS;
-      btn.addEventListener("click", function () { setupNames.splice(i, 1); renderSetupPlayers(); });
+      btn.addEventListener("click", function () { setupNames.splice(i, 1); setupJingles.splice(i, 1); renderSetupPlayers(); });
       el.playerList.appendChild(li);
     });
     el.btnAddPlayer.disabled = setupNames.length >= MAX_PLAYERS;
-    if (focusedId && /^player-/.test(focusedId) && $(focusedId)) $(focusedId).focus();
+    if (focusedId && /^(player|jingle)-/.test(focusedId) && $(focusedId)) $(focusedId).focus();
   }
   function focusPlayer(i) { var f = $("player-" + i); if (f) { f.focus(); f.select(); } }
   function addPlayer() {
     if (setupNames.length >= MAX_PLAYERS) return;
     setupNames.push(null);
+    setupJingles.push(JINGLES.map(function (_, k) { return k; }).filter(function (k) { return setupJingles.indexOf(k) < 0; })[0]);
     renderSetupPlayers();
     focusPlayer(setupNames.length - 1);
   }
@@ -1313,6 +1364,7 @@
       if (saved && !saved.finished) {
         el.btnResume.hidden = false;
         setupNames = saved.players.map(function (p) { return p.name; });
+        setupJingles = saved.players.map(function (p, i) { return typeof p.jingle === "number" ? p.jingle : i; });
         el.btnResume.addEventListener("click", function () {
           pauseTimerOf(saved);
           state = saved; veiled = true; unlockAudio(); render();
