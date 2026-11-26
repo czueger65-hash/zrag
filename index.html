@@ -216,6 +216,9 @@
   .ranking li { border-left: 4px solid var(--c); }
   .stage .topic { color: var(--c, var(--ink)); }
   .seg { justify-self: start; }
+  .end h2.suspense { animation: pulse 0.9s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.45; } }
+  @media (prefers-reduced-motion: reduce) { .end h2.suspense { animation: none; } }
   .preview { display: grid; gap: 20px; max-width: 820px; width: 100%; justify-self: center; }
   .preview-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
   .preview-list li {
@@ -383,7 +386,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">Version 1.03</span>
+    <span class="ver" id="appVersion">Version 1.04</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -426,6 +429,7 @@
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
       lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Anhören", listenAria: "Jingle von Spieler {n} anhören", jingleAria: "Jingle für Spieler {n} auswählen",
+      suspense: "Und der Sieger ist …", and: "und", annWin: "Und der Sieger ist: {name}, mit {pts}!", annTie: "Gleichstand! Es gewinnen {names}, mit je {pts}!", annRank: "Die Rangliste:", annPlace: "Platz {p}: {name}, {pts}.",
       previewEyebrow: "Themen für dieses Spiel", previewTitle: "{n} Themen sind bereit",
       previewInfo: "Je 10 Begriffe pro Thema. Die Begriffe bleiben geheim, bis der Zeichner sie am Board aufdeckt.",
       confirm: "Spiel beginnen", regen: "Andere Themen erstellen", back: "Zurück", wordsCount: "{n} Begriffe"
@@ -460,6 +464,7 @@
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
       lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Listen", listenAria: "Play jingle of player {n}", jingleAria: "Choose jingle for player {n}",
+      suspense: "And the winner is …", and: "and", annWin: "And the winner is: {name}, with {pts}!", annTie: "It's a tie! The winners are {names}, with {pts} each!", annRank: "The final ranking:", annPlace: "Place {p}: {name}, {pts}.",
       previewEyebrow: "Topics for this game", previewTitle: "{n} topics are ready",
       previewInfo: "10 words per topic. The words stay secret until the drawer reveals them at the board.",
       confirm: "Start playing", regen: "Create other topics", back: "Back", wordsCount: "{n} words"
@@ -494,6 +499,7 @@
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
       lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Escuchar", listenAria: "Escuchar el jingle del jugador {n}", jingleAria: "Elegir jingle del jugador {n}",
+      suspense: "Y quien gana es …", and: "y", annWin: "¡Y quien gana es: {name}, con {pts}!", annTie: "¡Empate! Ganan {names}, con {pts} cada uno.", annRank: "La clasificación:", annPlace: "Puesto {p}: {name}, {pts}.",
       previewEyebrow: "Temas de esta partida", previewTitle: "{n} temas listos",
       previewInfo: "10 palabras por tema. Las palabras siguen ocultas hasta que quien dibuja las muestra en la pizarra.",
       confirm: "Empezar a jugar", regen: "Crear otros temas", back: "Volver", wordsCount: "{n} palabras"
@@ -528,6 +534,7 @@
       errEmpty: "Dai un nome a ogni giocatore o rimuovi le righe vuote.",
       errDup: "Ogni nome può comparire una sola volta.", errMin: "Servono almeno 2 giocatori.",
       lang: "Lingua", soundOn: "Audio sì", soundOff: "Audio no", listen: "Ascolta", listenAria: "Ascolta il jingle del giocatore {n}", jingleAria: "Scegli il jingle del giocatore {n}",
+      suspense: "E il vincitore è …", and: "e", annWin: "E il vincitore è: {name}, con {pts}!", annTie: "Pareggio! Vincono {names}, con {pts} ciascuno!", annRank: "La classifica:", annPlace: "{p}° posto: {name}, {pts}.",
       previewEyebrow: "Categorie di questa partita", previewTitle: "{n} categorie pronte",
       previewInfo: "10 parole per categoria. Le parole restano segrete finché chi disegna non le scopre alla lavagna.",
       confirm: "Inizia a giocare", regen: "Crea altre categorie", back: "Indietro", wordsCount: "{n} parole"
@@ -562,6 +569,7 @@
       errEmpty: "Dê um nome a cada jogador ou remova as linhas vazias.",
       errDup: "Cada nome só pode aparecer uma vez.", errMin: "São necessários pelo menos 2 jogadores.",
       lang: "Idioma", soundOn: "Som ligado", soundOff: "Som desligado", listen: "Ouvir", listenAria: "Ouvir o jingle do jogador {n}", jingleAria: "Escolher o jingle do jogador {n}",
+      suspense: "E o vencedor é …", and: "e", annWin: "E o vencedor é: {name}, com {pts}!", annTie: "Empate! Vencem {names}, com {pts} cada!", annRank: "A classificação:", annPlace: "{p}º lugar: {name}, {pts}.",
       previewEyebrow: "Categorias deste jogo", previewTitle: "{n} categorias prontas",
       previewInfo: "10 palavras por categoria. As palavras ficam em segredo até quem desenha revelá-las no quadro.",
       confirm: "Começar a jogar", regen: "Criar outras categorias", back: "Voltar", wordsCount: "{n} palavras"
@@ -815,6 +823,7 @@
       state.timer.leftMs = 0;
       state.result = { type: "timeout" };
       save(); beep(); render();
+      scheduleAutoFinish();
       return;
     }
     renderTimer();
@@ -846,6 +855,49 @@
       src.start(audio.currentTime);
       tone(70, 0, 0.35, "sine", 0.5);     // Knall-Körper
       tone(140, 0, 0.08, "square", 0.08);
+    } catch (e) {}
+  }
+  // Rausch-Puffer abspielen (für Trommelwirbel, Becken und Applaus)
+  function playNoise(data, filterType, freq, gain, when) {
+    var buf = audio.createBuffer(1, data.length, audio.sampleRate);
+    buf.getChannelData(0).set(data);
+    var src = audio.createBufferSource(); src.buffer = buf;
+    var f = audio.createBiquadFilter(); f.type = filterType; f.frequency.value = freq;
+    var g = audio.createGain(); g.gain.value = gain;
+    src.connect(f); f.connect(g); g.connect(audio.destination);
+    src.start(audio.currentTime + (when || 0));
+  }
+  // Spannungsaufbau: immer schneller und lauter werdender Trommelwirbel, am Ende Beckenschlag und Pauke
+  function playDrumroll(secs) {
+    if (!audio || !soundOn) return;
+    try {
+      var sr = audio.sampleRate, n = Math.floor(sr * secs), d = new Float32Array(n);
+      for (var t0 = 0; t0 < secs; ) {
+        var prog = t0 / secs, amp = 0.15 + 0.85 * prog * prog;
+        var start = Math.floor(t0 * sr), hit = Math.floor(sr * 0.03);
+        for (var k = 0; k < hit && start + k < n; k++) d[start + k] += (Math.random() * 2 - 1) * amp * Math.pow(1 - k / hit, 3);
+        t0 += 0.09 - 0.055 * prog;
+      }
+      playNoise(d, "bandpass", 1800, 0.7, 0);
+      tone(midi(36), 0, secs, "triangle", 0.05);
+      var cn = Math.floor(sr * 1.6), c = new Float32Array(cn);
+      for (var j = 0; j < cn; j++) c[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / cn, 2.5);
+      playNoise(c, "highpass", 3500, 0.6, secs);
+      tone(midi(36), secs, 0.8, "sine", 0.45);
+    } catch (e) {}
+  }
+  // Applaus: viele kurze Klatscher, einschwellend und ausklingend
+  function playApplause() {
+    if (!audio || !soundOn) return;
+    try {
+      var sr = audio.sampleRate, secs = 4, n = Math.floor(sr * secs), d = new Float32Array(n);
+      for (var i = 0; i < 360; i++) {
+        var at = Math.random() * secs;
+        var env = Math.min(1, at / 0.4) * Math.min(1, (secs - at) / 1.5);
+        var start = Math.floor(at * sr), len = Math.floor(sr * (0.006 + Math.random() * 0.01)), a = env * (0.4 + Math.random() * 0.6);
+        for (var k = 0; k < len && start + k < n; k++) d[start + k] += (Math.random() * 2 - 1) * a * Math.pow(1 - k / len, 2);
+      }
+      playNoise(d, "bandpass", 1400, 0.55, 0);
     } catch (e) {}
   }
   function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
@@ -982,7 +1034,9 @@
     if (!open.length) {
       pauseTimer();
       state.current = null; state.finished = true;
-      save(); render(); playWinnerJingles(); return;
+      cancelAutoFinish();
+      endPhase = "suspense";
+      save(); render(); startEndSequence(); return;
     }
     var ti = open[randInt(open.length)];
     var pool = state.remaining[ti];
@@ -1014,6 +1068,80 @@
     state.result = { type: "guessed", by: i, secs: secs };
     save(); render();
     playJingle(jingleOf(i));
+    scheduleAutoFinish();
+  }
+
+  // ---------- Spielende: 5 s warten, Trommelwirbel, Verkündung, Applaus ----------
+  var END_WAIT_MS = 5000;
+  var endPhase = null;          // "suspense" | "reveal" | null (= sofort alles zeigen)
+  var autoFinishTimer = null, endTimers = [];
+  var ttsPromise = (window.claude && typeof window.claude.use === "function")
+    ? window.claude.use("tts").catch(function () { return null; })
+    : Promise.resolve(null);
+  var TTS_LANG = { de: "de", en: "en-US", es: "es-ES", it: "it", pt: "pt-BR" };
+
+  function allWordsPlayed() { return state.remaining.every(function (r) { return r.length === 0; }); }
+  // Letzte Runde entschieden: nach 5 s automatisch zur Siegerehrung
+  function scheduleAutoFinish() {
+    if (!state || state.finished || !allWordsPlayed()) return;
+    cancelAutoFinish();
+    autoFinishTimer = setTimeout(function () {
+      autoFinishTimer = null;
+      if (state && !state.finished && state.result && allWordsPlayed()) nextRound();
+    }, END_WAIT_MS);
+  }
+  function cancelAutoFinish() { clearTimeout(autoFinishTimer); autoFinishTimer = null; }
+  function cancelEndSequence() {
+    cancelAutoFinish();
+    endTimers.forEach(clearTimeout); endTimers = [];
+    endPhase = null;
+    ttsPromise.then(function (tts) { if (tts) tts.stop().catch(function () {}); });
+  }
+  function later(ms, fn) { endTimers.push(setTimeout(fn, ms)); }
+
+  function startEndSequence() {
+    var SUSPENSE = 4000;
+    playDrumroll(SUSPENSE / 1000);
+    later(SUSPENSE, function () {
+      endPhase = "reveal";
+      render();
+      var jingleEnd = playWinnerJingles();
+      later(Math.round(jingleEnd * 1000) + 200, function () {
+        speakResult().then(function () { playApplause(); });
+      });
+    });
+  }
+
+  function rankingData() {
+    var sorted = state.players.slice().sort(function (a, b) { return b.score - a.score; });
+    var place = 0, last = null;
+    return sorted.map(function (p, i) {
+      if (p.score !== last) { place = i + 1; last = p.score; }
+      return { name: p.name, score: p.score, place: place };
+    });
+  }
+  function joinNames(list) {
+    return list.length < 2 ? list.join("") : list.slice(0, -1).join(", ") + " " + t("and") + " " + list[list.length - 1];
+  }
+  function pts(n) { return n + " " + (n === 1 ? t("point") : t("points")); }
+  function announcementLines() {
+    var rank = rankingData();
+    var winners = rank.filter(function (r) { return r.place === 1; });
+    var lines = [winners.length > 1
+      ? t("annTie", { names: joinNames(winners.map(function (w) { return w.name; })), pts: pts(winners[0].score) })
+      : t("annWin", { name: winners[0].name, pts: pts(winners[0].score) })];
+    lines.push(t("annRank"));
+    rank.forEach(function (r) { lines.push(t("annPlace", { p: r.place, name: r.name, pts: pts(r.score) })); });
+    return lines;
+  }
+  // Ansage in der aktiven Sprache; ohne Sprachausgabe geht es direkt weiter
+  function speakResult() {
+    if (!soundOn) return Promise.resolve();
+    var text = announcementLines().map(function (l) { return { text: l }; });
+    return ttsPromise.then(function (tts) {
+      if (!tts || !state || !state.finished) return;
+      return tts.speak(text, { language: TTS_LANG[lang] }).catch(function () {});
+    });
   }
 
   function toggleVeil() {
@@ -1063,6 +1191,7 @@
     var best = Math.max.apply(null, state.players.map(function (p) { return p.score; }));
     var at = 0;
     state.players.forEach(function (p, i) { if (p.score === best) at = playJingle(jingleOf(i), at); });
+    return at;
   }
 
   function jingleOf(i) { var j = state.players[i].jingle; return typeof j === "number" ? j : i % JINGLES.length; }
@@ -1075,6 +1204,7 @@
   function armReset() {
     if (resetArmed) {
       clearTimeout(resetArmed); resetArmed = null;
+      cancelEndSequence();
       setupNames = namesForSetup();
       state = null; clearSaved(); render();
       return;
@@ -1303,6 +1433,9 @@
     var best = sorted[0].score;
     var winners = sorted.filter(function (p) { return p.score === best; });
     el.endEyebrow.textContent = t("endEyebrow", { n: totalWords() });
+    el.ranking.hidden = endPhase === "suspense";
+    el.endTitle.classList.toggle("suspense", endPhase === "suspense");
+    if (endPhase === "suspense") { el.endTitle.textContent = t("suspense"); return; }
     el.endTitle.textContent = winners.length > 1
       ? t("tie", { names: winners.map(function (p) { return p.name; }).join(", ") })
       : t("wins", { name: winners[0].name });
@@ -1382,6 +1515,7 @@
   el.word.addEventListener("click", toggleVeil);
   el.btnReset.addEventListener("click", armReset);
   el.btnAgain.addEventListener("click", function () {
+    cancelEndSequence();
     setupNames = namesForSetup();
     state = null; clearSaved(); render();
   });
