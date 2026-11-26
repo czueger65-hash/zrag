@@ -250,7 +250,8 @@
   @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
   .source { margin: 0; color: var(--muted); font-size: 0.82rem; }
   .top-right { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-  .sound { padding: 7px 12px; font-size: 0.85rem; font-weight: 600; }
+  .sound { padding: 6px 10px; line-height: 0; }
+  .sound svg { display: block; }
   .sound[aria-pressed="false"] { color: var(--muted); }
   .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--board); }
   .lang button { border: 0; border-radius: 0; padding: 7px 14px; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; }
@@ -382,7 +383,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">V 1.01</span>
+    <span class="ver" id="appVersion">Version 1.02</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -1172,7 +1173,13 @@
       b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
     });
     el.langSwitch.setAttribute("aria-label", t("lang"));
-    el.btnSound.textContent = soundOn ? t("soundOn") : t("soundOff");
+    // Lautsprechersymbol; bei ausgeschaltetem Ton durchgestrichen
+    el.btnSound.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>' +
+      (soundOn ? '<path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/>' : '<path d="M3 3l18 18"/>') +
+      '</svg>';
+    el.btnSound.setAttribute("aria-label", soundOn ? t("soundOn") : t("soundOff"));
+    el.btnSound.title = soundOn ? t("soundOn") : t("soundOff");
     el.btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
     el.rules.textContent = t("rules");
     renderGen();

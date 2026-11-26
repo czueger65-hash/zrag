@@ -39,7 +39,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Timer pro Runde: 30, 60, 90 oder 120 Sekunden. In den letzten 10 Sekunden wird der Timer rot und jede Sekunde mit einem Ton abgezählt (die letzten 3 höher). Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.
 - Jeder Spieler wählt in der Einrichtung seinen Jingle aus 12 Ausschnitten klassischer Stücke (höchstens 3 Sekunden, Urheberrecht abgelaufen, im Browser nachgespielt): Ode an die Freude, Für Elise, Eine kleine Nachtmusik, In der Halle des Bergkönigs, Wilhelm Tell, Cancan, Rondo alla turca, An der schönen blauen Donau, Walkürenritt, Der Frühling (Vivaldi), Habanera (Carmen), Wiegenlied (Brahms). Jeder Jingle kann nur einmal vergeben werden. Er erklingt beim Auswählen, mit „Anhören“, wenn der Spieler eine Runde gewinnt, und am Spielende für den Sieger.
 - Beim Ankündigen der 6 Themen erklingt eine Fanfare nach „Also sprach Zarathustra“ (Richard Strauss).
-- Der Knopf „Ton an/aus“ oben rechts schaltet alle Töne stumm.
+- Der Lautsprecher-Knopf oben rechts schaltet alle Töne stumm (durchgestrichen = Ton aus).
 - Am Ende zeigt eine Rangliste den Sieger.
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
@@ -48,5 +48,5 @@ Die Anweisung an Claude steht in `index.html` in der Funktion `buildPrompt`. Die
 ## Kompilieren und Version
 
 `python3 build.py [Zieldatei]` erzeugt die veröffentlichbare Fassung (Standard: `dist/zsrag.html`).
-Jeder Lauf zählt die Version in `version.txt` um eins hoch (V 1.0 → V 1.01 → V 1.02 …, nach V 1.99 folgt V 2.0)
+Jeder Lauf zählt die Version in `version.txt` um eins hoch (Version 1.0 → 1.01 → 1.02 …, nach 1.99 folgt 2.0)
 und trägt Version und Datum des Kompilierens in die Fußzeile von `index.html` ein. `--no-bump` setzt nur das Datum.

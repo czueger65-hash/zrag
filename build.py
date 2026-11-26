@@ -2,7 +2,7 @@
 """Kompiliert ZsRAG für die Veröffentlichung.
 
 Bei jedem Lauf:
-  1. Version hochzählen (version.txt): 1.0 -> 1.01 -> 1.02 ... (nach 1.99 folgt 2.0)
+  1. Version hochzählen (version.txt): Version 1.0 -> 1.01 -> 1.02 ... (nach 1.99 folgt 2.0)
   2. Version und Datum des Kompilierens in index.html eintragen
   3. Artifact-Datei erzeugen (index.html ohne eigenes Dokumentgerüst)
 
@@ -39,7 +39,7 @@ def main():
 
     today = datetime.date.today().strftime("%d.%m.%Y")
     html = open(INDEX, encoding="utf-8").read()
-    html = re.sub(r'(<span class="ver" id="appVersion">)[^<]*(</span>)', r"\g<1>V " + version + r"\g<2>", html)
+    html = re.sub(r'(<span class="ver" id="appVersion">)[^<]*(</span>)', r"\g<1>Version " + version + r"\g<2>", html)
     html = re.sub(r'(<span id="buildDate">)[^<]*(</span>)', r"\g<1>" + today + r"\g<2>", html)
     open(INDEX, "w", encoding="utf-8").write(html)
 
@@ -48,7 +48,7 @@ def main():
     lines = [l for l in html.splitlines(True) if not drop.search(l)]
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     open(out, "w", encoding="utf-8").write("".join(lines))
-    print("ZsRAG V %s · %s -> %s" % (version, today, out))
+    print("ZsRAG Version %s · %s -> %s" % (version, today, out))
 
 
 if __name__ == "__main__":
