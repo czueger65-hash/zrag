@@ -193,6 +193,7 @@
   .scorelist button { padding: 6px 9px; font-size: 0.85rem; }
   .scorelist .guess { color: var(--ok); border-color: var(--ok); font-weight: 600; }
   .scorelist .minus { color: var(--muted); }
+  .scorelist .guess.undo { color: var(--warn); border-color: var(--warn); }
 
   /* Themenfortschritt */
   .topics { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
@@ -397,6 +398,7 @@
         <button type="button" class="primary" id="btnNext" data-i18n="next"></button>
         <button type="button" id="btnPause"></button>
         <button type="button" id="btnVeil"></button>
+        <button type="button" id="btnSkip" data-i18n="skipWord"></button>
         <button type="button" id="btnEndNow" data-i18n="endNow"></button>
         <button type="button" id="btnReset"></button>
       </div>
@@ -442,7 +444,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">Version 1.08</span>
+    <span class="ver" id="appVersion">Version 1.09</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -478,7 +480,7 @@
       next: "Nächste Runde", pause: "Pause", cont: "Weiter", reveal: "Aufdecken", hide: "Verdecken",
       reset: "Neu starten", resetConfirm: "Wirklich abbrechen?",
       keys: "<kbd>Enter</kbd> nächste Runde · <kbd>Leertaste</kbd> Pause · <kbd>V</kbd> aufdecken/verdecken · <kbd>1</kbd>–<kbd>9</kbd> Punkt vergeben",
-      scores: "Punktestand", scoresHint: "„Erraten“ beendet die Runde und vergibt den Punkt. Mit „−“ lassen sich Fehler korrigieren.",
+      scores: "Punktestand", scoresHint: "„Erraten“ beendet die Runde und vergibt den Punkt. Falscher Spieler? Einfach beim richtigen „Erraten“ drücken oder „Zurücknehmen“. Mit „−“ lassen sich Punkte abziehen.",
       guess: "Erraten", minusAria: "Einen Punkt abziehen", tagDrawing: "zeichnet", tagWinner: "hat erraten",
       veiled: "Verdeckt – zum Aufdecken tippen",
       stGuessed: "{name} hat nach {s} s erraten", stTimeout: "Zeit abgelaufen – kein Punkt",
@@ -497,6 +499,7 @@
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
       lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Anhören", listenAria: "Jingle von Spieler {n} anhören", jingleAria: "Jingle für Spieler {n} auswählen",
+      skipWord: "Anderer Begriff", undo: "Zurücknehmen",
       topicModeLegend: "Themen", modeAuto: "Claude wählt", modeCustom: "Selbst festlegen", customHint: "Leere Felder füllt Claude mit eigenen Themen.", topicPh: "Thema {n}",
       lvl_ultra: "Ultrahart", topicsLegend: "Anzahl Themen", wordsLegend: "Wörter pro Thema", part: "Teil {a} von {b}",
       levelLegend: "Niveau", lvl_easy: "Einfach", lvl_medium: "Mittel", lvl_hard: "Hart",
@@ -517,7 +520,7 @@
       next: "Next round", pause: "Pause", cont: "Resume", reveal: "Reveal", hide: "Hide",
       reset: "Restart", resetConfirm: "Really quit?",
       keys: "<kbd>Enter</kbd> next round · <kbd>Space</kbd> pause · <kbd>V</kbd> reveal/hide · <kbd>1</kbd>–<kbd>9</kbd> award point",
-      scores: "Scores", scoresHint: "“Guessed” ends the round and awards the point. Use “−” to correct mistakes.",
+      scores: "Scores", scoresHint: "“Guessed” ends the round and awards the point. Wrong player? Press “Guessed” for the right one, or “Undo”. Use “−” to remove points.",
       guess: "Guessed", minusAria: "Remove one point", tagDrawing: "drawing", tagWinner: "guessed it",
       veiled: "Hidden – tap to reveal",
       stGuessed: "{name} guessed it in {s} s", stTimeout: "Time's up – no point",
@@ -536,6 +539,7 @@
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
       lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Listen", listenAria: "Play jingle of player {n}", jingleAria: "Choose jingle for player {n}",
+      skipWord: "Other word", undo: "Undo",
       topicModeLegend: "Topics", modeAuto: "Claude chooses", modeCustom: "Set my own", customHint: "Claude fills empty fields with its own topics.", topicPh: "Topic {n}",
       lvl_ultra: "Ultra hard", topicsLegend: "Number of topics", wordsLegend: "Words per topic", part: "part {a} of {b}",
       levelLegend: "Level", lvl_easy: "Easy", lvl_medium: "Medium", lvl_hard: "Hard",
@@ -556,7 +560,7 @@
       next: "Siguiente ronda", pause: "Pausa", cont: "Seguir", reveal: "Mostrar", hide: "Ocultar",
       reset: "Reiniciar", resetConfirm: "¿Seguro que quieres salir?",
       keys: "<kbd>Enter</kbd> siguiente ronda · <kbd>Espacio</kbd> pausa · <kbd>V</kbd> mostrar/ocultar · <kbd>1</kbd>–<kbd>9</kbd> dar punto",
-      scores: "Puntuación", scoresHint: "«Acertó» termina la ronda y da el punto. Con «−» se corrigen errores.",
+      scores: "Puntuación", scoresHint: "«Acertó» termina la ronda y da el punto. ¿Jugador equivocado? Pulsa «Acertó» en el correcto o «Deshacer». Con «−» se quitan puntos.",
       guess: "Acertó", minusAria: "Quitar un punto", tagDrawing: "dibuja", tagWinner: "acertó",
       veiled: "Oculta – toca para mostrar",
       stGuessed: "{name} acertó en {s} s", stTimeout: "Se acabó el tiempo: sin punto",
@@ -575,6 +579,7 @@
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
       lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Escuchar", listenAria: "Escuchar el jingle del jugador {n}", jingleAria: "Elegir jingle del jugador {n}",
+      skipWord: "Otra palabra", undo: "Deshacer",
       topicModeLegend: "Temas", modeAuto: "Elige Claude", modeCustom: "Elegirlos yo", customHint: "Claude completa los campos vacíos con temas propios.", topicPh: "Tema {n}",
       lvl_ultra: "Ultradifícil", topicsLegend: "Número de temas", wordsLegend: "Palabras por tema", part: "parte {a} de {b}",
       levelLegend: "Nivel", lvl_easy: "Fácil", lvl_medium: "Medio", lvl_hard: "Difícil",
@@ -595,7 +600,7 @@
       next: "Turno successivo", pause: "Pausa", cont: "Riprendi", reveal: "Scopri", hide: "Copri",
       reset: "Ricomincia", resetConfirm: "Vuoi davvero uscire?",
       keys: "<kbd>Invio</kbd> turno successivo · <kbd>Spazio</kbd> pausa · <kbd>V</kbd> scopri/copri · <kbd>1</kbd>–<kbd>9</kbd> assegna punto",
-      scores: "Punteggio", scoresHint: "«Indovinato» chiude il turno e assegna il punto. Con «−» si correggono gli errori.",
+      scores: "Punteggio", scoresHint: "«Indovinato» chiude il turno e assegna il punto. Giocatore sbagliato? Premi «Indovinato» su quello giusto oppure «Annulla». Con «−» si tolgono punti.",
       guess: "Indovinato", minusAria: "Togli un punto", tagDrawing: "disegna", tagWinner: "ha indovinato",
       veiled: "Coperta – tocca per scoprire",
       stGuessed: "{name} ha indovinato in {s} s", stTimeout: "Tempo scaduto: nessun punto",
@@ -614,6 +619,7 @@
       errEmpty: "Dai un nome a ogni giocatore o rimuovi le righe vuote.",
       errDup: "Ogni nome può comparire una sola volta.", errMin: "Servono almeno 2 giocatori.",
       lang: "Lingua", soundOn: "Audio sì", soundOff: "Audio no", listen: "Ascolta", listenAria: "Ascolta il jingle del giocatore {n}", jingleAria: "Scegli il jingle del giocatore {n}",
+      skipWord: "Altra parola", undo: "Annulla",
       topicModeLegend: "Categorie", modeAuto: "Sceglie Claude", modeCustom: "Le scelgo io", customHint: "Claude riempie i campi vuoti con categorie sue.", topicPh: "Categoria {n}",
       lvl_ultra: "Ultradifficile", topicsLegend: "Numero di categorie", wordsLegend: "Parole per categoria", part: "parte {a} di {b}",
       levelLegend: "Livello", lvl_easy: "Facile", lvl_medium: "Medio", lvl_hard: "Difficile",
@@ -634,7 +640,7 @@
       next: "Próxima rodada", pause: "Pausar", cont: "Continuar", reveal: "Revelar", hide: "Esconder",
       reset: "Recomeçar", resetConfirm: "Quer mesmo sair?",
       keys: "<kbd>Enter</kbd> próxima rodada · <kbd>Espaço</kbd> pausar · <kbd>V</kbd> revelar/esconder · <kbd>1</kbd>–<kbd>9</kbd> dar ponto",
-      scores: "Placar", scoresHint: "“Acertou” encerra a rodada e dá o ponto. Use “−” para corrigir erros.",
+      scores: "Placar", scoresHint: "“Acertou” encerra a rodada e dá o ponto. Jogador errado? Toque em “Acertou” no jogador certo ou em “Desfazer”. Use “−” para tirar pontos.",
       guess: "Acertou", minusAria: "Tirar um ponto", tagDrawing: "desenhando", tagWinner: "acertou",
       veiled: "Escondida – toque para revelar",
       stGuessed: "{name} acertou em {s} s", stTimeout: "Tempo esgotado: sem ponto",
@@ -653,6 +659,7 @@
       errEmpty: "Dê um nome a cada jogador ou remova as linhas vazias.",
       errDup: "Cada nome só pode aparecer uma vez.", errMin: "São necessários pelo menos 2 jogadores.",
       lang: "Idioma", soundOn: "Som ligado", soundOff: "Som desligado", listen: "Ouvir", listenAria: "Ouvir o jingle do jogador {n}", jingleAria: "Escolher o jingle do jogador {n}",
+      skipWord: "Outra palavra", undo: "Desfazer",
       topicModeLegend: "Categorias", modeAuto: "Claude escolhe", modeCustom: "Escolher eu mesmo", customHint: "O Claude preenche os campos vazios com categorias próprias.", topicPh: "Categoria {n}",
       lvl_ultra: "Ultradifícil", topicsLegend: "Número de categorias", wordsLegend: "Palavras por categoria", part: "parte {a} de {b}",
       levelLegend: "Nível", lvl_easy: "Fácil", lvl_medium: "Médio", lvl_hard: "Difícil",
@@ -892,7 +899,7 @@
   var el = {};
   ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
    "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
-   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "previewInfo", "previewLevel", "btnEndNow", "endConfirm", "btnEndYes", "btnEndNo", "revealBar", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "btnSkip", "previewInfo", "previewLevel", "btnEndNow", "endConfirm", "btnEndYes", "btnEndNo", "revealBar", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
   ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
@@ -1184,9 +1191,20 @@
   }
 
   function award(i) {
-    if (!state || state.finished || state.result || !state.started || i >= state.players.length) return;
+    if (!state || state.finished || !state.started || i >= state.players.length) return;
     var d = drawerIndex();
     if (i === d) return;
+    var r = state.result;
+    // Korrektur: Punkt der Runde vom falsch gewählten auf den richtigen Spieler übertragen
+    if (r && r.type === "guessed") {
+      if (r.by === i) return;
+      state.players[r.by].score = Math.max(0, state.players[r.by].score - 1);
+      state.players[i].score += 1;
+      r.by = i;
+      save(); render();
+      playJingle(jingleOf(i));
+      return;
+    }
     pauseTimer();
     state.players[i].score += 1;
     if (state.drawerPoint) state.players[d].score += 1;
@@ -1195,6 +1213,39 @@
     save(); render();
     playJingle(jingleOf(i));
     scheduleAutoFinish();
+  }
+
+  // Zurücknehmen: Punkt(e) der Runde abziehen, Runde läuft mit der Restzeit weiter
+  function undoAward() {
+    var r = state && state.result;
+    if (!r || r.type !== "guessed" || state.finished) return;
+    state.players[r.by].score = Math.max(0, state.players[r.by].score - 1);
+    if (state.drawerPoint) { var d = drawerIndex(); state.players[d].score = Math.max(0, state.players[d].score - 1); }
+    state.result = null;
+    cancelAutoFinish();
+    if (state.timer.leftMs > 0) { state.timer.endsAt = Date.now() + state.timer.leftMs; state.timer.running = true; }
+    else { state.result = { type: "timeout" }; }
+    save(); render();
+  }
+
+  // Anderer Begriff: wenn der Zeichner den Begriff nicht zeichnen kann
+  function otherWordAvailable() {
+    return !!state && !state.finished && !state.result && state.remaining.some(function (r) { return r.length > 0; });
+  }
+  function skipWord() {
+    if (!otherWordAvailable()) return;
+    var ti = state.current.t;
+    if (!state.remaining[ti].length) {                       // Thema leer: anderes offenes Thema
+      var open = []; state.remaining.forEach(function (r, i) { if (r.length) open.push(i); });
+      ti = open[randInt(open.length)];
+    }
+    var pool = state.remaining[ti];
+    state.current = { t: ti, w: pool.splice(randInt(pool.length), 1)[0] };
+    state.timer.leftMs = state.duration * 1000;              // volle Zeit für den neuen Begriff
+    if (state.started) { state.timer.endsAt = Date.now() + state.timer.leftMs; state.timer.running = true; }
+    lastTickSec = null;
+    save();
+    if (state.started) { veiled = false; render(); scheduleAutoVeil(); } else render();
   }
 
   // ---------- Spielende: 5 s warten, Trommelwirbel, Verkündung, Applaus ----------
@@ -1567,9 +1618,10 @@
       if (i === d) { var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = t("tagDrawing"); nameEl.appendChild(tag); }
       if (isWinner) { var tg = document.createElement("span"); tg.className = "tag"; tg.textContent = t("tagWinner"); nameEl.appendChild(tg); }
       var g = li.querySelector(".guess");
-      g.textContent = t("guess");
-      g.disabled = i === d || !!state.result || !state.started;
-      g.addEventListener("click", function () { award(i); });
+      g.textContent = isWinner ? t("undo") : t("guess");
+      g.classList.toggle("undo", isWinner);
+      g.disabled = i === d || !state.started;
+      g.addEventListener("click", function () { if (isWinner) undoAward(); else award(i); });
       var m = li.querySelector(".minus");
       m.setAttribute("aria-label", t("minusAria"));
       m.disabled = p.score === 0;
@@ -1606,6 +1658,7 @@
       s.textContent = "";
     }
     el.btnPause.disabled = !!r || !state.started;
+    el.btnSkip.disabled = !otherWordAvailable();
     el.btnPause.textContent = state.timer.running || !state.started ? t("pause") : t("cont");
     el.btnReset.textContent = resetArmed ? t("resetConfirm") : t("reset");
     el.btnReset.classList.toggle("danger", !!resetArmed);
@@ -1681,6 +1734,7 @@
   });
   el.btnCancel.addEventListener("click", cancelGen);
   el.btnEndNow.addEventListener("click", openEndConfirm);
+  el.btnSkip.addEventListener("click", skipWord);
   el.btnEndYes.addEventListener("click", endNow);
   el.btnEndNo.addEventListener("click", closeEndConfirm);
   el.btnConfirm.addEventListener("click", confirmPreview);
