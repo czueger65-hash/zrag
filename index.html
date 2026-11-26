@@ -65,7 +65,14 @@
   }
   .shell { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; display: grid; gap: 20px; }
 
-  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brandbox { display: grid; gap: 2px; }
+  .tagline-full { margin: 0; font-size: 0.8rem; letter-spacing: 0.02em; color: var(--ink); }
+  .tagline-full b { font-weight: 800; }
+  .tagline-full .k1 { color: var(--m1); } .tagline-full .k2 { color: var(--m2); } .tagline-full .k3 { color: var(--m3); }
+  .tagline-full .k4 { color: var(--m4); } .tagline-full .k5 { color: var(--m5); }
+  .foot { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .foot .ver { font-weight: 600; color: var(--ink); }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { font-family: var(--font-display); font-weight: 800; font-size: 2rem; letter-spacing: -0.02em; margin: 0; }
   .brand { display: flex; letter-spacing: 0; }
   .brand span:nth-child(1) { color: var(--m1); }
@@ -254,7 +261,10 @@
 <body>
 <div class="shell">
   <header class="top">
-    <h1 class="brand" aria-label="ZsRAG"><span>Z</span><span>s</span><span>R</span><span>A</span><span>G</span><span>.</span></h1>
+    <div class="brandbox">
+      <h1 class="brand" aria-label="ZsRAG"><span>Z</span><span>s</span><span>R</span><span>A</span><span>G</span><span>.</span></h1>
+      <p class="tagline-full"><b class="k1">Z</b>ivil<b class="k2">s</b>chutz <b class="k3">R</b>aclette-<b class="k4">A</b>bend <b class="k5">G</b>ame</p>
+    </div>
     <div class="top-right">
       <div class="meta" id="meta"></div>
       <button type="button" class="sound" id="btnSound" aria-pressed="true"></button>
@@ -370,6 +380,12 @@
 
   <div class="topics" id="topics"></div>
   <p class="source" id="sourceNote" hidden></p>
+
+  <footer class="foot">
+    <span class="ver" id="appVersion">V 1.0</span>
+    <span id="buildDate">26.11.2026</span>
+    <span>© Chrizzz</span>
+  </footer>
 </div>
 
 <script>
@@ -814,6 +830,23 @@
     o.connect(g); g.connect(audio.destination);
     o.start(t0); o.stop(t0 + dur + 0.02);
   }
+  // Startschuss beim ersten Aufdecken: kurzer Rauschknall mit tiefem Nachhall
+  function startShot() {
+    if (!audio || !soundOn) return;
+    try {
+      var len = Math.floor(audio.sampleRate * 0.6);
+      var buf = audio.createBuffer(1, len, audio.sampleRate);
+      var data = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 6);
+      var src = audio.createBufferSource(); src.buffer = buf;
+      var lp = audio.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400;
+      var g = audio.createGain(); g.gain.value = 0.9;
+      src.connect(lp); lp.connect(g); g.connect(audio.destination);
+      src.start(audio.currentTime);
+      tone(70, 0, 0.35, "sine", 0.5);     // Knall-Körper
+      tone(140, 0, 0.08, "square", 0.08);
+    } catch (e) {}
+  }
   function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
 
   // Countdown: kurzer Ton pro Sekunde, die letzten 3 höher
@@ -990,6 +1023,7 @@
       state.timer.running = true;
       state.timer.endsAt = Date.now() + state.timer.leftMs;
       unlockAudio();
+      startShot();
       save();
     }
     render();

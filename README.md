@@ -1,5 +1,7 @@
 # ZsRAG
 
+**Zivilschutz Raclette-Abend Game**
+
 Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den angezeigten Begriff, die anderen raten; wer zuerst richtig liegt, gewinnt die Runde.
 
 ## Nutzung
@@ -32,7 +34,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Ein Thema ist nach 10 Wörtern erledigt, das Spiel nach allen 60.
 - 2 bis 9 Spieler. Der erste Zeichner wird zufällig ausgelost. Danach zeichnet, wer die Runde zuvor richtig geraten hat. Errät niemand den Begriff (Zeit abgelaufen oder Runde übersprungen), ist der nächste Spieler in der Reihe dran. Der Zeichner kann in seiner Runde keinen Punkt erhalten.
 - Wer zuerst richtig rät, bekommt 1 Punkt. Optional bekommt auch der Zeichner 1 Punkt, wenn sein Begriff erraten wird.
-- Jeder Begriff erscheint verdeckt. Der Zeichner deckt ihn am Board auf (Tippen auf das Feld, Button oder `V`); erst dann startet der Timer und Punkte können vergeben werden. Nach 3 Sekunden wird der Begriff automatisch wieder verdeckt; ein Sprachwechsel bei sichtbarem Begriff zeigt die Übersetzung erneut 3 Sekunden lang.
+- Jeder Begriff erscheint verdeckt. Der Zeichner deckt ihn am Board auf (Tippen auf das Feld, Button oder `V`); erst dann startet der Timer und Punkte können vergeben werden. Beim ersten Aufdecken ertönt ein Startschuss. Nach 3 Sekunden wird der Begriff automatisch wieder verdeckt; ein Sprachwechsel bei sichtbarem Begriff zeigt die Übersetzung erneut 3 Sekunden lang.
 - Timer pro Runde: 30, 60, 90 oder 120 Sekunden. In den letzten 10 Sekunden wird der Timer rot und jede Sekunde mit einem Ton abgezählt (die letzten 3 höher). Läuft er ab, gibt es keinen Punkt, und ein Signalton ertönt.
 - Jeder Spieler wählt in der Einrichtung seinen Jingle aus 12 Ausschnitten klassischer Stücke (höchstens 3 Sekunden, Urheberrecht abgelaufen, im Browser nachgespielt): Ode an die Freude, Für Elise, Eine kleine Nachtmusik, In der Halle des Bergkönigs, Wilhelm Tell, Cancan, Rondo alla turca, An der schönen blauen Donau, Walkürenritt, Der Frühling (Vivaldi), Habanera (Carmen), Wiegenlied (Brahms). Jeder Jingle kann nur einmal vergeben werden. Er erklingt beim Auswählen, mit „Anhören“, wenn der Spieler eine Runde gewinnt, und am Spielende für den Sieger.
 - Beim Ankündigen der 6 Themen erklingt eine Fanfare nach „Also sprach Zarathustra“ (Richard Strauss).
@@ -41,3 +43,9 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 - Der Spielstand wird im Browser gespeichert und lässt sich nach einem Neuladen fortsetzen.
 
 Die Anweisung an Claude steht in `index.html` in der Funktion `buildPrompt`. Die Ersatzliste steht im Array `POOL`, jeweils als `[Deutsch, Englisch, Spanisch, Italienisch, Portugiesisch]`. Die Texte der Oberfläche stehen im Objekt `I18N`.
+
+## Kompilieren und Version
+
+`python3 build.py [Zieldatei]` erzeugt die veröffentlichbare Fassung (Standard: `dist/zsrag.html`).
+Jeder Lauf zählt die Version in `version.txt` um eins hoch (V 1.0 → V 1.01 → V 1.02 …, nach V 1.99 folgt V 2.0)
+und trägt Version und Datum des Kompilierens in die Fußzeile von `index.html` ein. `--no-bump` setzt nur das Datum.
