@@ -283,7 +283,7 @@
   <section id="setup" class="panel setup">
     <div>
       <div class="eyebrow" data-i18n="tagline"></div>
-      <h2 data-i18n="newGame"></h2>
+      <h2 data-i18n="howTo"></h2>
     </div>
     <p class="rules" id="rules"></p>
     <fieldset class="field">
@@ -383,7 +383,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">Version 1.02</span>
+    <span class="ver" id="appVersion">Version 1.03</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -397,7 +397,7 @@
   var LANGS = ["de", "en", "es", "it", "pt"];
   var I18N = {
     de: {
-      tagline: "Zeichnen & Raten", newGame: "Neues Spiel",
+      tagline: "Zeichnen & Raten", newGame: "Neues Spiel", howTo: "Wie wird gespielt?",
       rules: "Pro Runde zeichnet eine Person den angezeigten Begriff am Whiteboard, die anderen raten. Der Begriff erscheint verdeckt: Der Zeichner deckt ihn erst am Board auf, dann startet der Timer; die letzten 10 Sekunden werden hörbar abgezählt. Wer zuerst richtig rät, bekommt einen Punkt und hört seinen eigenen Jingle. Der erste Zeichner wird ausgelost, danach zeichnet, wer zuletzt richtig geraten hat. Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen. Nach dem Aufdecken wird der Begriff nach 3 Sekunden automatisch wieder verdeckt.",
       playersLegend: "Spieler (2 bis 9)", addPlayer: "Spieler hinzufügen", remove: "Entfernen",
       playerDefault: "Spieler {n}", playerAria: "Name Spieler {n}", removeAria: "Spieler {n} entfernen",
@@ -431,7 +431,7 @@
       confirm: "Spiel beginnen", regen: "Andere Themen erstellen", back: "Zurück", wordsCount: "{n} Begriffe"
     },
     en: {
-      tagline: "Draw & Guess", newGame: "New game",
+      tagline: "Draw & Guess", newGame: "New game", howTo: "How to play",
       rules: "Each round, one person draws the word shown on the whiteboard while the others guess. The word starts hidden: the drawer reveals it once at the board, and that starts the timer; the last 10 seconds are counted down out loud. Whoever guesses right first gets a point and hears their own jingle. The first drawer is picked at random; after that, whoever guessed the last word draws next. For every game, Claude puts together 6 new topics with 10 words each. Once revealed, the word is hidden again automatically after 3 seconds.",
       playersLegend: "Players (2 to 9)", addPlayer: "Add player", remove: "Remove",
       playerDefault: "Player {n}", playerAria: "Name of player {n}", removeAria: "Remove player {n}",
@@ -465,7 +465,7 @@
       confirm: "Start playing", regen: "Create other topics", back: "Back", wordsCount: "{n} words"
     },
     es: {
-      tagline: "Dibuja y adivina", newGame: "Nueva partida",
+      tagline: "Dibuja y adivina", newGame: "Nueva partida", howTo: "¿Cómo se juega?",
       rules: "En cada ronda, una persona dibuja en la pizarra la palabra que aparece y los demás adivinan. La palabra empieza oculta: quien dibuja la muestra cuando ya está en la pizarra, y en ese momento empieza el temporizador; los últimos 10 segundos suenan en cuenta atrás. Quien acierta primero gana un punto y suena su propio jingle. El primer dibujante se elige al azar; después dibuja quien acertó la ronda anterior. En cada partida, Claude crea 6 temas nuevos con 10 palabras cada uno. Una vez mostrada, la palabra vuelve a ocultarse sola a los 3 segundos.",
       playersLegend: "Jugadores (de 2 a 9)", addPlayer: "Añadir jugador", remove: "Quitar",
       playerDefault: "Jugador {n}", playerAria: "Nombre del jugador {n}", removeAria: "Quitar jugador {n}",
@@ -499,7 +499,7 @@
       confirm: "Empezar a jugar", regen: "Crear otros temas", back: "Volver", wordsCount: "{n} palabras"
     },
     it: {
-      tagline: "Disegna e indovina", newGame: "Nuova partita",
+      tagline: "Disegna e indovina", newGame: "Nuova partita", howTo: "Come si gioca?",
       rules: "A ogni turno una persona disegna alla lavagna la parola mostrata e gli altri indovinano. La parola è inizialmente coperta: chi disegna la scopre quando è già alla lavagna, e in quel momento parte il timer; gli ultimi 10 secondi vengono scanditi da un suono. Chi indovina per primo ottiene un punto e sente il proprio jingle. Il primo a disegnare viene estratto a sorte; poi disegna chi ha indovinato il turno precedente. A ogni partita Claude crea 6 nuove categorie con 10 parole ciascuna. Una volta scoperta, la parola si copre di nuovo da sola dopo 3 secondi.",
       playersLegend: "Giocatori (da 2 a 9)", addPlayer: "Aggiungi giocatore", remove: "Rimuovi",
       playerDefault: "Giocatore {n}", playerAria: "Nome del giocatore {n}", removeAria: "Rimuovi giocatore {n}",
@@ -533,7 +533,7 @@
       confirm: "Inizia a giocare", regen: "Crea altre categorie", back: "Indietro", wordsCount: "{n} parole"
     },
     pt: {
-      tagline: "Desenhe e adivinhe", newGame: "Novo jogo",
+      tagline: "Desenhe e adivinhe", newGame: "Novo jogo", howTo: "Como jogar?",
       rules: "Em cada rodada, uma pessoa desenha no quadro a palavra mostrada e os outros adivinham. A palavra começa escondida: quem desenha a revela quando já está no quadro, e nesse momento o cronômetro começa; os últimos 10 segundos são contados com um som. Quem acertar primeiro ganha um ponto e ouve o seu próprio jingle. O primeiro a desenhar é sorteado; depois desenha quem acertou a rodada anterior. A cada jogo, o Claude cria 6 categorias novas com 10 palavras cada. Depois de revelada, a palavra volta a ficar escondida sozinha após 3 segundos.",
       playersLegend: "Jogadores (de 2 a 9)", addPlayer: "Adicionar jogador", remove: "Remover",
       playerDefault: "Jogador {n}", playerAria: "Nome do jogador {n}", removeAria: "Remover jogador {n}",
