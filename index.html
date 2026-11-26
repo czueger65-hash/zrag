@@ -301,7 +301,7 @@
         <label><input type="radio" name="duration" id="dur120" value="120"><span>120 s</span></label>
       </div>
     </fieldset>
-    <label class="check"><input type="checkbox" id="drawerPoint"> <span data-i18n="drawerPoint"></span></label>
+    <label class="check"><input type="checkbox" id="drawerPoint" checked> <span data-i18n="drawerPoint"></span></label>
     <p class="error" id="setupError" hidden></p>
     <div class="gen" id="genBox" hidden>
       <p class="gen-msg"><span class="spinner" id="genSpinner" aria-hidden="true"></span><span id="genMsg"></span></p>
@@ -382,7 +382,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">V 1.0</span>
+    <span class="ver" id="appVersion">V 1.01</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -1065,9 +1065,10 @@
   }
 
   function jingleOf(i) { var j = state.players[i].jingle; return typeof j === "number" ? j : i % JINGLES.length; }
+  // Neustart: Spieleranzahl und Jingles bleiben, die Namen werden auf die Standardnamen zurückgesetzt
   function namesForSetup() {
     setupJingles = state.players.map(function (p, i) { return jingleOf(i); });
-    return state.players.map(function (p) { return p.name; });
+    return state.players.map(function () { return null; });
   }
 
   function armReset() {
