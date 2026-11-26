@@ -25,6 +25,7 @@ Browser-Spiel zum Zeichnen und Raten. Eine Person zeichnet am Whiteboard den ang
 ## Spiellogik
 
 - Bei jedem Spielstart stellt Claude 6 neue Themen mit je 10 Begriffen zusammen (höchstens 60 Begriffe pro Spiel), jeweils in allen fünf Sprachen.
+- Niveau in der Einrichtung: Einfach, Mittel (Standard) oder Hart. Es bestimmt Themen und Begriffe: Einfach = breite, vertraute Themen und sehr gängige Dinge, die ein Kind mit wenigen Formen zeichnen kann; Mittel = spezifischere Themen und Begriffe mit mehr Details oder kleinen Szenen; Hart = ausgefallene Themen und anspruchsvolle, aber zeichenbare Begriffe (seltene Gegenstände, Berufe, Tätigkeiten, Szenen). Das Niveau wird auf der Themenübersicht und im Spiel angezeigt. Die Ersatzliste ist nicht nach Niveau sortiert.
 - Vorgaben an Claude: konkret und in unter einer Minute erkennbar zeichenbar, in allen fünf Sprachen eindeutig übersetzbar, keine regionalen Begriffe, keine Marken, kein Wort doppelt. Die Themen der letzten Spiele (im Browser gemerkt) werden ausgeschlossen, damit sich nichts wiederholt.
 - Nach der Erstellung zeigt eine eigene Seite die Themen des Spiels (ohne die Begriffe). Erst mit „Spiel beginnen“ (oder `Enter`) startet das Spiel; „Andere Themen erstellen“ lässt Claude neue Themen erstellen, „Zurück“ führt zur Einrichtung.
 - Die Antwort wird geprüft: unvollständige Einträge und doppelte Wörter werden verworfen, mehr als 6 Themen oder 10 Wörter werden abgeschnitten.

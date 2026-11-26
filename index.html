@@ -225,6 +225,8 @@
     background: color-mix(in srgb, var(--ink) 45%, transparent);
   }
   .dialog { max-width: 440px; width: 100%; display: grid; gap: 14px; border-top: 6px solid var(--m4); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25); }
+  .lvl-pill { display: inline-block; margin: 6px 0 4px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; color: var(--board); }
+  .lvl-pill.lvl-easy { background: var(--m3); } .lvl-pill.lvl-medium { background: var(--m4); } .lvl-pill.lvl-hard { background: var(--m2); }
   .preview { display: grid; gap: 20px; max-width: 820px; width: 100%; justify-self: center; }
   .preview-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
   .preview-list li {
@@ -311,6 +313,14 @@
         <label><input type="radio" name="duration" id="dur120" value="120"><span>120 s</span></label>
       </div>
     </fieldset>
+    <fieldset class="field">
+      <legend data-i18n="levelLegend"></legend>
+      <div class="seg" id="levelSeg">
+        <label><input type="radio" name="level" id="lvlEasy" value="easy"><span data-i18n="lvl_easy"></span></label>
+        <label><input type="radio" name="level" id="lvlMedium" value="medium" checked><span data-i18n="lvl_medium"></span></label>
+        <label><input type="radio" name="level" id="lvlHard" value="hard"><span data-i18n="lvl_hard"></span></label>
+      </div>
+    </fieldset>
     <label class="check"><input type="checkbox" id="drawerPoint" checked> <span data-i18n="drawerPoint"></span></label>
     <p class="error" id="setupError" hidden></p>
     <div class="gen" id="genBox" hidden>
@@ -365,6 +375,7 @@
   <section id="preview" class="panel preview" hidden>
     <div>
       <div class="eyebrow" data-i18n="previewEyebrow"></div>
+      <span class="lvl-pill" id="previewLevel"></span>
       <h2 id="previewTitle"></h2>
     </div>
     <p class="rules" data-i18n="previewInfo"></p>
@@ -393,7 +404,7 @@
   <p class="source" id="sourceNote" hidden></p>
 
   <footer class="foot">
-    <span class="ver" id="appVersion">Version 1.05</span>
+    <span class="ver" id="appVersion">Version 1.06</span>
     <span id="buildDate">26.11.2026</span>
     <span>© Chrizzz</span>
   </footer>
@@ -448,6 +459,7 @@
       errEmpty: "Bitte jedem Spieler einen Namen geben oder leere Zeilen entfernen.",
       errDup: "Jeder Name darf nur einmal vorkommen.", errMin: "Es braucht mindestens 2 Spieler.",
       lang: "Sprache", soundOn: "Ton an", soundOff: "Ton aus", listen: "Anhören", listenAria: "Jingle von Spieler {n} anhören", jingleAria: "Jingle für Spieler {n} auswählen",
+      levelLegend: "Niveau", lvl_easy: "Einfach", lvl_medium: "Mittel", lvl_hard: "Hart",
       endNow: "Siegerehrung", confirmTitle: "Spiel jetzt beenden?", confirmText: "Wirklich direkt zur Siegerehrung mit dem aktuellen Punktestand gehen?", confirmYes: "Ja, zur Siegerehrung", confirmNo: "Weiterspielen", endEyebrowEarly: "Spiel beendet nach {d} von {t} Begriffen",
       suspense: "Und der Sieger ist …", and: "und", annWin: "Und der Sieger ist: {name}, mit {pts}!", annTie: "Gleichstand! Es gewinnen {names}, mit je {pts}!", annRank: "Die Rangliste:", annPlace: "Platz {p}: {name}, {pts}.",
       previewEyebrow: "Themen für dieses Spiel", previewTitle: "{n} Themen sind bereit",
@@ -484,6 +496,7 @@
       errEmpty: "Give every player a name or remove empty rows.",
       errDup: "Each name may only be used once.", errMin: "You need at least 2 players.",
       lang: "Language", soundOn: "Sound on", soundOff: "Sound off", listen: "Listen", listenAria: "Play jingle of player {n}", jingleAria: "Choose jingle for player {n}",
+      levelLegend: "Level", lvl_easy: "Easy", lvl_medium: "Medium", lvl_hard: "Hard",
       endNow: "Award ceremony", confirmTitle: "End the game now?", confirmText: "Go straight to the award ceremony with the current scores?", confirmYes: "Yes, to the ceremony", confirmNo: "Keep playing", endEyebrowEarly: "Game ended after {d} of {t} words",
       suspense: "And the winner is …", and: "and", annWin: "And the winner is: {name}, with {pts}!", annTie: "It's a tie! The winners are {names}, with {pts} each!", annRank: "The final ranking:", annPlace: "Place {p}: {name}, {pts}.",
       previewEyebrow: "Topics for this game", previewTitle: "{n} topics are ready",
@@ -520,6 +533,7 @@
       errEmpty: "Pon un nombre a cada jugador o quita las filas vacías.",
       errDup: "Cada nombre solo puede aparecer una vez.", errMin: "Se necesitan al menos 2 jugadores.",
       lang: "Idioma", soundOn: "Sonido sí", soundOff: "Sonido no", listen: "Escuchar", listenAria: "Escuchar el jingle del jugador {n}", jingleAria: "Elegir jingle del jugador {n}",
+      levelLegend: "Nivel", lvl_easy: "Fácil", lvl_medium: "Medio", lvl_hard: "Difícil",
       endNow: "Ceremonia final", confirmTitle: "¿Terminar la partida ahora?", confirmText: "¿Seguro que quieres ir directamente a la ceremonia de premios con la puntuación actual?", confirmYes: "Sí, a la ceremonia", confirmNo: "Seguir jugando", endEyebrowEarly: "Partida terminada tras {d} de {t} palabras",
       suspense: "Y quien gana es …", and: "y", annWin: "¡Y quien gana es: {name}, con {pts}!", annTie: "¡Empate! Ganan {names}, con {pts} cada uno.", annRank: "La clasificación:", annPlace: "Puesto {p}: {name}, {pts}.",
       previewEyebrow: "Temas de esta partida", previewTitle: "{n} temas listos",
@@ -556,6 +570,7 @@
       errEmpty: "Dai un nome a ogni giocatore o rimuovi le righe vuote.",
       errDup: "Ogni nome può comparire una sola volta.", errMin: "Servono almeno 2 giocatori.",
       lang: "Lingua", soundOn: "Audio sì", soundOff: "Audio no", listen: "Ascolta", listenAria: "Ascolta il jingle del giocatore {n}", jingleAria: "Scegli il jingle del giocatore {n}",
+      levelLegend: "Livello", lvl_easy: "Facile", lvl_medium: "Medio", lvl_hard: "Difficile",
       endNow: "Premiazione", confirmTitle: "Terminare la partita ora?", confirmText: "Vuoi davvero passare subito alla premiazione con il punteggio attuale?", confirmYes: "Sì, alla premiazione", confirmNo: "Continua a giocare", endEyebrowEarly: "Partita terminata dopo {d} parole su {t}",
       suspense: "E il vincitore è …", and: "e", annWin: "E il vincitore è: {name}, con {pts}!", annTie: "Pareggio! Vincono {names}, con {pts} ciascuno!", annRank: "La classifica:", annPlace: "{p}° posto: {name}, {pts}.",
       previewEyebrow: "Categorie di questa partita", previewTitle: "{n} categorie pronte",
@@ -592,6 +607,7 @@
       errEmpty: "Dê um nome a cada jogador ou remova as linhas vazias.",
       errDup: "Cada nome só pode aparecer uma vez.", errMin: "São necessários pelo menos 2 jogadores.",
       lang: "Idioma", soundOn: "Som ligado", soundOff: "Som desligado", listen: "Ouvir", listenAria: "Ouvir o jingle do jogador {n}", jingleAria: "Escolher o jingle do jogador {n}",
+      levelLegend: "Nível", lvl_easy: "Fácil", lvl_medium: "Médio", lvl_hard: "Difícil",
       endNow: "Premiação", confirmTitle: "Encerrar o jogo agora?", confirmText: "Quer mesmo ir direto para a premiação com o placar atual?", confirmYes: "Sim, para a premiação", confirmNo: "Continuar jogando", endEyebrowEarly: "Jogo encerrado após {d} de {t} palavras",
       suspense: "E o vencedor é …", and: "e", annWin: "E o vencedor é: {name}, com {pts}!", annTie: "Empate! Vencem {names}, com {pts} cada!", annRank: "A classificação:", annPlace: "{p}º lugar: {name}, {pts}.",
       previewEyebrow: "Categorias deste jogo", previewTitle: "{n} categorias prontas",
@@ -681,6 +697,17 @@
     try { localStorage.setItem(RECENT_KEY, JSON.stringify(names.concat(loadRecent()).slice(0, 36))); } catch (e) {}
   }
 
+  // Niveau: steuert Themen und Begriffe der Anfrage an Claude
+  function currentLevel() {
+    var r = document.querySelector('input[name="level"]:checked');
+    return r ? r.value : "medium";
+  }
+  var LEVEL_RULES = {
+    easy: "Difficulty: EASY. Use broad, familiar categories (for example animals, food, at home, toys). Every word is a very common, concrete everyday thing that an 8-year-old knows and can draw with a few simple shapes (for example Sun, House, Apple, Cat, Ball). No compound concepts, no actions, no scenes.",
+    medium: "Difficulty: MEDIUM. Use somewhat more specific categories. Words are well known but need more detail or a small scene to draw (for example Lighthouse, Wheelbarrow, Ski jumping, Hedgehog, Pirate ship). Mostly objects, plus a few clearly visible actions.",
+    hard: "Difficulty: HARD. Use specific, surprising categories. Words are still concrete and drawable but demanding: less common objects, professions, actions, scenes or combined ideas that take creativity to draw (for example Solar eclipse, Ventriloquist, Message in a bottle, Tug of war, Beekeeper). Nothing abstract that cannot be drawn."
+  };
+
   function buildPrompt() {
     var recent = loadRecent();
     return [
@@ -690,11 +717,13 @@
       "Rules for the words:",
       "- Every word is a concrete object, animal, person or role, place, food, or clearly visible action that a person can draw recognizably on a whiteboard in under a minute, without writing letters or numbers.",
       "- Every word has a clear, common equivalent in German, English, Spanish, Italian and Portuguese. No regional or dialect words (no Swiss or Austrian German), no brand names, no names of real people, nothing abstract.",
-      "- No word appears twice in the whole game. Mix easy, medium and harder words. Family-friendly.",
+      "- No word appears twice in the whole game. Family-friendly.",
+      "",
+      LEVEL_RULES[currentLevel()],
       "- German: standard German, nouns capitalized, no articles, write \"ss\" instead of \"ß\". English: American English, no articles. Spanish: Spanish from Spain, no articles. Italian: standard Italian, no articles. Portuguese: Brazilian Portuguese, no articles. Capitalize the first letter in every language.",
       "",
       "Rules for the categories:",
-      "- Make the six categories clearly different from each other and varied: combine everyday themes with unusual, specific or playful ones (for example a setting, an occupation's world, an era, an activity), not only broad textbook groups.",
+      "- Make the six categories clearly different from each other and varied, at the level of difficulty described above.",
       "- Category names are short (at most 4 words) and translated into all five languages.",
       recent.length ? "- Do not reuse or closely resemble these recently played categories: " + recent.join("; ") + "." : "",
       "",
@@ -763,7 +792,7 @@
   // Erstellte Themen erst anzeigen; das Spiel beginnt nach Bestätigung
   var pending = null;   // { names, dur, drawerPoint, themen, source }
   function showPreview(names, dur, drawerPoint, themen, source) {
-    pending = { names: names, dur: dur, drawerPoint: drawerPoint, themen: themen, source: source };
+    pending = { names: names, dur: dur, drawerPoint: drawerPoint, themen: themen, source: source, level: currentLevel() };
     render();
     el.btnConfirm.focus();
     playFanfare();
@@ -772,7 +801,7 @@
     if (!pending) return;
     var p = pending; pending = null;
     unlockAudio();
-    startGame(p.names, p.dur, p.drawerPoint, p.themen, p.source);
+    startGame(p.names, p.dur, p.drawerPoint, p.themen, p.source, p.level);
   }
 
   function genFailed(key) {
@@ -792,7 +821,7 @@
   var el = {};
   ["meta", "langSwitch", "setup", "game", "end", "rules", "playerList", "btnAddPlayer", "drawerPoint", "setupError",
    "btnStart", "btnResume", "drawerName", "topic", "word", "timer", "time", "bar", "status", "btnNext", "btnPause",
-   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "btnEndNow", "endConfirm", "btnEndYes", "btnEndNo", "revealBar", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
+   "btnVeil", "btnReset", "keysHint", "btnSound", "genBox", "genMsg", "genSpinner", "btnRetry", "btnFallback", "btnCancel", "sourceNote", "previewLevel", "btnEndNow", "endConfirm", "btnEndYes", "btnEndNo", "revealBar", "preview", "previewTitle", "previewList", "previewSource", "btnConfirm", "btnRegen", "btnBack", "scoreList", "endEyebrow", "endTitle", "ranking", "btnAgain", "topics"
   ].forEach(function (id) { el[id] = $(id); });
 
   var state = null;          // laufendes Spiel
@@ -1036,7 +1065,7 @@
   }
   function randInt(n) { return Math.floor(Math.random() * n); }
 
-  function startGame(names, duration, drawerPoint, themen, source) {
+  function startGame(names, duration, drawerPoint, themen, source, level) {
     state = {
       players: names.map(function (n, i) { return { name: n, score: 0, jingle: setupJingles[i] }; }),
       duration: duration,
@@ -1044,6 +1073,7 @@
       themen: themen,
       remaining: themen.map(function (th) { return range(th.words.length); }),
       source: source,
+      level: level || "medium",
       current: null, round: 0, result: null, finished: false, started: false,
       drawer: randInt(names.length),   // erster Zeichner zufällig
       timer: { running: false, endsAt: 0, leftMs: duration * 1000 }
@@ -1391,6 +1421,8 @@
 
   function renderPreview() {
     el.previewTitle.textContent = t("previewTitle", { n: pending.themen.length });
+    el.previewLevel.textContent = t("levelLegend") + ": " + t("lvl_" + pending.level);
+    el.previewLevel.className = "lvl-pill lvl-" + pending.level;
     el.previewList.innerHTML = "";
     pending.themen.forEach(function (th, i) {
       var li = document.createElement("li");
@@ -1520,7 +1552,7 @@
     }
     var total = totalWords();
     var drawn = total - state.remaining.reduce(function (s, r) { return s + r.length; }, 0);
-    el.meta.textContent = t("metaGame", { r: state.round, d: drawn, t: total });
+    el.meta.textContent = t("metaGame", { r: state.round, d: drawn, t: total }) + " · " + t("lvl_" + (state.level || "medium"));
     el.sourceNote.hidden = false;
     el.sourceNote.textContent = state.source === "claude" ? t("srcClaude") : t("srcFallback");
     if (state.finished) { show("end"); renderEnd(); return; }
